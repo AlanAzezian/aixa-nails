@@ -1,26 +1,67 @@
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+@theme {
+  --color-brand-bg: #FDE8E9;
+  --color-brand-bg-light: #FFF5F5;
+  --color-brand-burgundy: #6B0F24;
+  --color-brand-dark: #4A0716;
+  --color-brand-accent: #C9939B;
+
+  --font-cormorant: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-script: var(--font-script), "Pinyon Script", cursive;
+  --font-jost: var(--font-jost), "Jost", sans-serif;
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --brand-bg: #FDE8E9;
+  --brand-bg-light: #FFF5F5;
+  --brand-burgundy: #6B0F24;
+  --brand-dark: #4A0716;
+  --brand-accent: #C9939B;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: auto !important;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #FDE8E9;
+  color: #4A0716;
+  font-family: var(--font-jost), sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-cormorant {
+  font-family: var(--font-cormorant), Georgia, serif;
+}
+
+.font-script {
+  font-family: var(--font-script), "Pinyon Script", cursive;
+}
+
+.font-jost {
+  font-family: var(--font-jost), "Jost", sans-serif;
+}
+
+/* Custom smooth styling */
+::selection {
+  background-color: #6B0F24;
+  color: #FFF5F5;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FDE8E9;
+}
+::-webkit-scrollbar-thumb {
+  background: #C9939B;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6B0F24;
 }
