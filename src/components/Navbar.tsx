@@ -53,7 +53,7 @@ export default function Navbar() {
         {/* Primary CTA */}
         <div className="hidden md:flex items-center">
           <Link
-            href="#reservar"
+            href="/reservar"
             className="group relative inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-brand-burgundy hover:bg-brand-dark text-brand-bg-light text-sm font-medium tracking-wide transition-all duration-300 shadow-[0_4px_14px_rgba(107,15,36,0.18)] hover:shadow-[0_6px_20px_rgba(107,15,36,0.28)] hover:scale-[1.02] active:scale-[0.98]"
           >
             <span>Reservar turno</span>
@@ -93,7 +93,7 @@ export default function Navbar() {
                 </Link>
               ))}
               <Link
-                href="#reservar"
+                href="/reservar"
                 onClick={() => setMobileMenuOpen(false)}
                 className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-full bg-brand-burgundy text-brand-bg-light font-medium text-sm shadow-md mt-2"
               >

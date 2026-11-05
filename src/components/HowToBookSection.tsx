@@ -82,9 +82,7 @@ export default function HowToBookSection() {
             {/* CTA Button in white */}
             <div id="reservar" className="pt-2">
               <Link
-                href="https://wa.me/?text=Hola%20Aixa!%20Quiero%20consultar%20por%20un%20turno%20para%20hacerme%20las%20u%C3%B1as"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/reservar"
                 className="group inline-flex items-center justify-center gap-2.5 px-9 py-4 rounded-full bg-brand-bg-light hover:bg-white text-brand-dark font-medium text-sm sm:text-base tracking-wide shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
               >
                 <span>Reservar turno</span>

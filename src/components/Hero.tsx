@@ -60,7 +60,7 @@ export default function Hero() {
               className="flex flex-wrap items-center gap-4 w-full sm:w-auto"
             >
               <Link
-                href="#reservar"
+                href="/reservar"
                 className="group relative inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-brand-burgundy hover:bg-brand-dark text-brand-bg-light font-medium text-sm sm:text-base tracking-wide shadow-[0_8px_24px_rgba(107,15,36,0.22)] hover:shadow-[0_10px_28px_rgba(107,15,36,0.32)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 w-full sm:w-auto"
               >
                 <span>Reservar turno</span>

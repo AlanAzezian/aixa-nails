@@ -191,7 +191,7 @@ export default function RecentWorksSection() {
                   </div>
 
                   <Link
-                    href="#reservar"
+                    href="/reservar"
                     className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-brand-bg text-brand-burgundy group-hover:bg-brand-burgundy group-hover:text-white transition-colors"
                     title={`Pedir diseño similar a ${work.title}`}
                   >

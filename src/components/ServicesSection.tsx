@@ -55,7 +55,7 @@ export default function ServicesSection() {
           </div>
 
           <Link
-            href="#reservar"
+            href="/reservar"
             className="group inline-flex items-center gap-1.5 text-sm font-medium text-brand-burgundy hover:text-brand-dark transition-colors self-start sm:self-auto"
           >
             <span>Ver detalle y precios</span>
@@ -98,7 +98,7 @@ export default function ServicesSection() {
                   {service.tag}
                 </span>
                 <Link
-                  href="#reservar"
+                  href="/reservar"
                   className="w-8 h-8 rounded-full bg-brand-bg flex items-center justify-center text-brand-burgundy group-hover:bg-brand-burgundy group-hover:text-brand-bg-light transition-colors"
                   aria-label={`Reservar ${service.title}`}
                 >
