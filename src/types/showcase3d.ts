@@ -19,4 +19,9 @@ export interface NailDesign {
   iridescence: number;
   sheen: number;
   sheenColor: string;
+  thickness?: number;
+  ior?: number;
+  attenuationColor?: string;
+  attenuationDistance?: number;
+  normalScale?: number;
 }
