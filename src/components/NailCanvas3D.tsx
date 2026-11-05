@@ -253,7 +253,7 @@ export default function NailCanvas3D({ selectedDesign }: NailCanvas3DProps) {
     const mat = nailMaterialRef.current;
     mat.map = texture;
     mat.roughness = selectedDesign.roughness;
-    mat.metalness = 0.0;
+    mat.metalness = selectedDesign.metalness;
     mat.clearcoat = selectedDesign.clearcoat;
     mat.clearcoatRoughness = selectedDesign.clearcoatRoughness;
     mat.needsUpdate = true;

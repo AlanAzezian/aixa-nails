@@ -2,6 +2,7 @@ export interface NailDesign {
   id: string;
   name: string;
   subtitle: string;
+  shape?: string;
   technique: string;
   finish: string;
   durability: string;
