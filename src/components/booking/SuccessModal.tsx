@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Sparkles, MessageCircle, Home, X } from 'lucide-react';
 import { Service } from '@/types/database';
+import { useWhatsAppPhone } from '@/components/WhatsAppLink';
+import { buildWhatsAppUrl } from '@/lib/siteSettings';
 
 interface SuccessModalProps {
   isOpen: boolean;
@@ -25,6 +27,8 @@ export default function SuccessModal({
   clientName,
   clientPhone,
 }: SuccessModalProps) {
+  const whatsappPhone = useWhatsAppPhone();
+
   useEffect(() => {
     // Only fire confetti in the browser via dynamic import to guarantee SSR safety
     if (isOpen && typeof window !== 'undefined') {
@@ -46,18 +50,17 @@ export default function SuccessModal({
 
   if (!isOpen) return null;
 
-  // Build preloaded WhatsApp message
-  const whatsappText = encodeURIComponent(
+  // Build preloaded WhatsApp message (al número configurado por Aixa en el panel)
+  const whatsappText =
     `Hola Aixa! Acabo de solicitar un turno en la web:\n` +
-      `• Nombre: ${clientName}\n` +
-      `• Teléfono: ${clientPhone}\n` +
-      `• Servicio: ${service?.name || ''}\n` +
-      `• Fecha: ${dateDisplay || ''}\n` +
-      `• Horario: ${time || ''} hs\n\n` +
-      `¿Me confirmás la reserva? ¡Muchas gracias!`
-  );
+    `• Nombre: ${clientName}\n` +
+    `• Teléfono: ${clientPhone}\n` +
+    `• Servicio: ${service?.name || ''}\n` +
+    `• Fecha: ${dateDisplay || ''}\n` +
+    `• Horario: ${time || ''} hs\n\n` +
+    `¿Me confirmás la reserva? ¡Muchas gracias!`;
 
-  const whatsappUrl = `https://wa.me/?text=${whatsappText}`;
+  const whatsappUrl = buildWhatsAppUrl(whatsappText, whatsappPhone);
 
   return (
     <AnimatePresence>

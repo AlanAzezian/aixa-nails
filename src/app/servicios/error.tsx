@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { RefreshCw, MessageCircle } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import WhatsAppLink from '@/components/WhatsAppLink';
 
 export default function ServiciosError({
   error,
@@ -46,15 +47,13 @@ export default function ServiciosError({
               <span>Ir a Reservar</span>
             </Link>
 
-            <a
-              href="https://wa.me/?text=Hola%20Aixa!%20Quiero%20consultar%20por%20un%20servicio%20de%20u%C3%B1as."
-              target="_blank"
-              rel="noopener noreferrer"
+            <WhatsAppLink
+              text="Hola Aixa! Quiero consultar por un servicio de uñas."
               className="px-6 py-3 rounded-full bg-brand-bg-light border border-brand-accent/50 text-brand-dark text-sm font-medium flex items-center gap-2 hover:bg-brand-accent/20 transition-all"
             >
               <MessageCircle className="w-4 h-4 text-brand-burgundy" />
               <span>WhatsApp</span>
-            </a>
+            </WhatsAppLink>
           </div>
         </div>
       </main>

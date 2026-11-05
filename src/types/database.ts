@@ -34,6 +34,24 @@ export interface Appointment {
   created_at?: string;
 }
 
+export const WORK_CATEGORIES = ['Semipermanente', 'Polygel', 'Soft gel'] as const;
+export type WorkCategory = (typeof WORK_CATEGORIES)[number];
+
+export interface Work {
+  id: string;
+  title: string;
+  category: WorkCategory;
+  image_url: string;
+  is_featured: boolean;
+  created_at?: string;
+}
+
+export interface SiteSettings {
+  id?: number;
+  whatsapp_phone: string | null; // Solo dígitos, formato internacional (ej: 5491112345678)
+  updated_at?: string;
+}
+
 export interface BookingFormData {
   service: Service | null;
   date: string | null; // YYYY-MM-DD

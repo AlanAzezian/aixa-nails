@@ -18,6 +18,8 @@ import {
   X,
   Phone,
   RefreshCw,
+  Image as ImageIcon,
+  Settings,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { fetchWeeklySchedule, fetchServices } from '@/lib/bookingService';
@@ -28,6 +30,10 @@ import {
 } from '@/lib/adminService';
 import { Appointment, WeeklySchedule, Service } from '@/types/database';
 import BrandLogo from '@/components/BrandLogo';
+import GalleryManager from '@/components/admin/GalleryManager';
+import SiteSettingsManager from '@/components/admin/SiteSettingsManager';
+
+type AdminTab = 'agenda' | 'solicitudes' | 'disponibilidad' | 'galeria' | 'ajustes';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -36,7 +42,7 @@ export default function AdminDashboardPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule[]>([]);
   const [services, setServices] = useState<Service[]>([]);
-  const [activeTab, setActiveTab] = useState<'agenda' | 'solicitudes' | 'disponibilidad'>('agenda');
+  const [activeTab, setActiveTab] = useState<AdminTab>('agenda');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [todayStr, setTodayStr] = useState('2026-11-05');
   const [todayFormatted, setTodayFormatted] = useState('Hoy');
@@ -216,6 +222,32 @@ export default function AdminDashboardPage() {
               <CheckCircle className="w-4 h-4 text-brand-accent" />
               <span>Horarios y Días</span>
             </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('galeria')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all cursor-pointer ${
+                activeTab === 'galeria'
+                  ? 'bg-brand-burgundy text-white shadow-md'
+                  : 'text-brand-bg-light/75 hover:bg-white/5 hover:text-white'
+              }`}
+            >
+              <ImageIcon className="w-4 h-4 text-brand-accent" />
+              <span>Galería de Trabajos</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('ajustes')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all cursor-pointer ${
+                activeTab === 'ajustes'
+                  ? 'bg-brand-burgundy text-white shadow-md'
+                  : 'text-brand-bg-light/75 hover:bg-white/5 hover:text-white'
+              }`}
+            >
+              <Settings className="w-4 h-4 text-brand-accent" />
+              <span>Ajustes del Sitio</span>
+            </button>
           </nav>
         </div>
 
@@ -310,6 +342,26 @@ export default function AdminDashboardPage() {
             >
               Mi Disponibilidad
             </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('galeria');
+                setMobileMenuOpen(false);
+              }}
+              className="w-full text-left py-2 px-3 rounded-lg hover:bg-white/5"
+            >
+              Galería de Trabajos
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('ajustes');
+                setMobileMenuOpen(false);
+              }}
+              className="w-full text-left py-2 px-3 rounded-lg hover:bg-white/5"
+            >
+              Ajustes del Sitio
+            </button>
             <div className="pt-2 border-t border-white/10">
               <button
                 type="button"
@@ -332,7 +384,15 @@ export default function AdminDashboardPage() {
               Hola, Aixa
             </span>
             <h1 className="font-cormorant text-3xl sm:text-4xl font-semibold text-brand-dark tracking-tight">
-              Agenda · {todayFormatted}
+              {activeTab === 'galeria'
+                ? 'Galería de Trabajos'
+                : activeTab === 'ajustes'
+                ? 'Ajustes del Sitio'
+                : activeTab === 'solicitudes'
+                ? 'Solicitudes de Turnos'
+                : activeTab === 'disponibilidad'
+                ? 'Días y Horarios'
+                : `Agenda · ${todayFormatted}`}
             </h1>
           </div>
 
@@ -347,230 +407,243 @@ export default function AdminDashboardPage() {
           </button>
         </div>
 
-        {/* WhatsApp Confirmation Toast / Banner */}
-        <AnimatePresence>
-          {confirmedClientWhatsApp && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="mb-8 p-5 rounded-2xl bg-[#E8F8ED] border border-green-300 text-green-950 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm"
-            >
-              <div className="flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 text-green-700 flex-shrink-0" />
-                <p className="text-sm">
-                  Turno confirmado para <strong>{confirmedClientWhatsApp.name}</strong>. ¿Querés
-                  enviarle la confirmación por WhatsApp ahora?
+        {/* Tab 1: Galería de Trabajos */}
+        {activeTab === 'galeria' && <GalleryManager />}
+
+        {/* Tab 2: Ajustes del Sitio */}
+        {activeTab === 'ajustes' && <SiteSettingsManager />}
+
+        {/* Tab 3, 4, 5: Agenda, Solicitudes, Disponibilidad */}
+        {(activeTab === 'agenda' ||
+          activeTab === 'solicitudes' ||
+          activeTab === 'disponibilidad') && (
+          <>
+            {/* WhatsApp Confirmation Toast / Banner */}
+            <AnimatePresence>
+              {confirmedClientWhatsApp && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="mb-8 p-5 rounded-2xl bg-[#E8F8ED] border border-green-300 text-green-950 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-700 flex-shrink-0" />
+                    <p className="text-sm">
+                      Turno confirmado para <strong>{confirmedClientWhatsApp.name}</strong>. ¿Querés
+                      enviarle la confirmación por WhatsApp ahora?
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={confirmedClientWhatsApp.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 rounded-full bg-green-700 hover:bg-green-800 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-sm"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      <span>Mandar WhatsApp</span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmedClientWhatsApp(null)}
+                      className="p-2 text-green-900/60 hover:text-green-950"
+                      aria-label="Cerrar aviso"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* 3 Metric KPI Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
+              {/* Confirmed Today */}
+              <div className="bg-brand-bg-light rounded-3xl p-6 border border-brand-accent/35 shadow-sm">
+                <span className="text-xs uppercase tracking-wider font-semibold text-brand-dark/60 block mb-2">
+                  Turnos confirmados (hoy)
+                </span>
+                <div className="font-cormorant text-5xl font-light text-brand-burgundy leading-none">
+                  {todayAppointments.length}
+                </div>
+              </div>
+
+              {/* Pending Requests */}
+              <div className="bg-brand-bg-light rounded-3xl p-6 border border-brand-accent/35 shadow-sm">
+                <span className="text-xs uppercase tracking-wider font-semibold text-brand-dark/60 block mb-2">
+                  Solicitudes pendientes
+                </span>
+                <div className="font-cormorant text-5xl font-light text-brand-burgundy leading-none">
+                  {pendingAppointments.length}
+                </div>
+              </div>
+
+              {/* Open Days */}
+              <div className="bg-brand-bg-light rounded-3xl p-6 border border-brand-accent/35 shadow-sm">
+                <span className="text-xs uppercase tracking-wider font-semibold text-brand-dark/60 block mb-2">
+                  Días abiertos esta semana
+                </span>
+                <div className="font-cormorant text-5xl font-light text-brand-burgundy leading-none">
+                  {openDaysCount}
+                </div>
+              </div>
+            </div>
+
+            {/* 2 Main Modules Grid: Solicitudes Nuevas & Turnos del Día */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
+              {/* Solicitudes Nuevas */}
+              <div className="lg:col-span-7 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-cormorant text-2xl font-semibold text-brand-dark">
+                    Solicitudes nuevas
+                  </h2>
+                  <span className="text-xs text-brand-dark/60">
+                    {pendingAppointments.length} pendientes
+                  </span>
+                </div>
+
+                {pendingAppointments.length === 0 ? (
+                  <div className="bg-brand-bg-light/60 rounded-3xl p-8 border border-dashed border-brand-accent/40 text-center text-sm text-brand-dark/60">
+                    No hay solicitudes pendientes en este momento.
+                  </div>
+                ) : (
+                  <div className="space-y-3.5">
+                    {pendingAppointments.map((app) => (
+                      <motion.div
+                        key={app.id}
+                        layout
+                        className="bg-brand-bg-light rounded-2xl p-5 border border-brand-accent/35 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      >
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium text-brand-dark text-base">
+                              {app.client_name}
+                            </span>
+                            <span className="text-xs text-brand-dark/50">·</span>
+                            <span className="text-xs font-medium text-brand-burgundy">
+                              {app.appointment_date} · {app.appointment_time} hs
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-brand-dark/75 font-normal">
+                            {getServiceName(app.service_id)}
+                          </p>
+
+                          {app.notes && (
+                            <p className="text-xs text-brand-dark/60 italic mt-1 bg-brand-bg/50 px-2 py-0.5 rounded-md inline-block">
+                              Nota: {app.notes}
+                            </p>
+                          )}
+
+                          <div className="flex items-center gap-1.5 text-xs text-brand-dark/60 mt-1">
+                            <Phone className="w-3 h-3 text-brand-accent" />
+                            <span>{app.client_phone}</span>
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => handleConfirm(app)}
+                            className="px-4 py-2 rounded-full bg-brand-burgundy hover:bg-brand-dark text-white text-xs font-semibold tracking-wide transition-all shadow-sm cursor-pointer"
+                          >
+                            Confirmar
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleReject(app)}
+                            className="px-4 py-2 rounded-full bg-brand-bg hover:bg-brand-accent/20 text-brand-dark/80 text-xs font-medium border border-brand-accent/40 transition-all cursor-pointer"
+                          >
+                            Rechazar
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Turnos del Día */}
+              <div className="lg:col-span-5 space-y-4">
+                <h2 className="font-cormorant text-2xl font-semibold text-brand-dark">
+                  Turnos del día
+                </h2>
+
+                {todayAppointments.length === 0 ? (
+                  <div className="bg-brand-bg-light/60 rounded-3xl p-8 border border-dashed border-brand-accent/40 text-center text-sm text-brand-dark/60">
+                    No hay turnos confirmados agendados para hoy.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {todayAppointments.map((app) => (
+                      <div
+                        key={app.id}
+                        className="bg-brand-bg-light rounded-2xl p-4 border border-brand-accent/35 shadow-sm flex items-center justify-between gap-3"
+                      >
+                        <div className="flex items-center gap-3.5">
+                          <div className="font-cormorant text-xl font-semibold text-brand-burgundy">
+                            {app.appointment_time}
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm text-brand-dark">{app.client_name}</p>
+                            <p className="text-xs text-brand-dark/60">
+                              {getServiceName(app.service_id)}
+                            </p>
+                          </div>
+                        </div>
+
+                        <span className="px-3 py-1 rounded-full bg-brand-burgundy text-white text-[10px] font-bold tracking-wider uppercase">
+                          Confirmado
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Module: Mi Disponibilidad (Semana) */}
+            <div className="bg-brand-bg-light rounded-3xl p-6 sm:p-8 border border-brand-accent/35 shadow-sm">
+              <div className="mb-6">
+                <h2 className="font-cormorant text-2xl font-semibold text-brand-dark mb-1">
+                  Mi disponibilidad
+                </h2>
+                <p className="text-xs sm:text-sm text-brand-dark/60">
+                  Tocá un día para abrirlo o cerrarlo. Horario base 10:00 a 19:00.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <a
-                  href={confirmedClientWhatsApp.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-full bg-green-700 hover:bg-green-800 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-sm"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>Mandar WhatsApp</span>
-                </a>
-                <button
-                  type="button"
-                  onClick={() => setConfirmedClientWhatsApp(null)}
-                  className="p-2 text-green-900/60 hover:text-green-950"
-                  aria-label="Cerrar aviso"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
+                {daysMap.map(({ day, name, label }) => {
+                  const schedule = weeklySchedule.find((s) => s.day_of_week === day);
+                  const isOpen = schedule ? schedule.is_open : false;
 
-        {/* 3 Metric KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
-          {/* Confirmed Today */}
-          <div className="bg-brand-bg-light rounded-3xl p-6 border border-brand-accent/35 shadow-sm">
-            <span className="text-xs uppercase tracking-wider font-semibold text-brand-dark/60 block mb-2">
-              Turnos confirmados (hoy)
-            </span>
-            <div className="font-cormorant text-5xl font-light text-brand-burgundy leading-none">
-              {todayAppointments.length}
+                  return (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => handleToggleDay(day, isOpen)}
+                      className={`p-4 rounded-2xl flex flex-col items-center justify-center transition-all duration-200 cursor-pointer text-center border ${
+                        isOpen
+                          ? 'bg-brand-burgundy text-brand-bg-light border-brand-burgundy shadow-sm hover:scale-[1.02]'
+                          : 'bg-brand-bg/40 text-brand-dark/60 border-dashed border-brand-accent/50 hover:border-brand-burgundy/50'
+                      }`}
+                    >
+                      <span className="text-xs font-semibold tracking-wider mb-1">{name}</span>
+                      <span className="text-[11px] uppercase font-bold tracking-wider">
+                        {isOpen ? 'Abierto' : 'Cerrado'}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-
-          {/* Pending Requests */}
-          <div className="bg-brand-bg-light rounded-3xl p-6 border border-brand-accent/35 shadow-sm">
-            <span className="text-xs uppercase tracking-wider font-semibold text-brand-dark/60 block mb-2">
-              Solicitudes pendientes
-            </span>
-            <div className="font-cormorant text-5xl font-light text-brand-burgundy leading-none">
-              {pendingAppointments.length}
-            </div>
-          </div>
-
-          {/* Open Days */}
-          <div className="bg-brand-bg-light rounded-3xl p-6 border border-brand-accent/35 shadow-sm">
-            <span className="text-xs uppercase tracking-wider font-semibold text-brand-dark/60 block mb-2">
-              Días abiertos esta semana
-            </span>
-            <div className="font-cormorant text-5xl font-light text-brand-burgundy leading-none">
-              {openDaysCount}
-            </div>
-          </div>
-        </div>
-
-        {/* 2 Main Modules Grid: Solicitudes Nuevas & Turnos del Día */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
-          {/* Solicitudes Nuevas */}
-          <div className="lg:col-span-7 space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-cormorant text-2xl font-semibold text-brand-dark">
-                Solicitudes nuevas
-              </h2>
-              <span className="text-xs text-brand-dark/60">
-                {pendingAppointments.length} pendientes
-              </span>
-            </div>
-
-            {pendingAppointments.length === 0 ? (
-              <div className="bg-brand-bg-light/60 rounded-3xl p-8 border border-dashed border-brand-accent/40 text-center text-sm text-brand-dark/60">
-                No hay solicitudes pendientes en este momento.
-              </div>
-            ) : (
-              <div className="space-y-3.5">
-                {pendingAppointments.map((app) => (
-                  <motion.div
-                    key={app.id}
-                    layout
-                    className="bg-brand-bg-light rounded-2xl p-5 border border-brand-accent/35 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-brand-dark text-base">
-                          {app.client_name}
-                        </span>
-                        <span className="text-xs text-brand-dark/50">·</span>
-                        <span className="text-xs font-medium text-brand-burgundy">
-                          {app.appointment_date} · {app.appointment_time} hs
-                        </span>
-                      </div>
-
-                      <p className="text-xs text-brand-dark/75 font-normal">
-                        {getServiceName(app.service_id)}
-                      </p>
-
-                      {app.notes && (
-                        <p className="text-xs text-brand-dark/60 italic mt-1 bg-brand-bg/50 px-2 py-0.5 rounded-md inline-block">
-                          Nota: {app.notes}
-                        </p>
-                      )}
-
-                      <div className="flex items-center gap-1.5 text-xs text-brand-dark/60 mt-1">
-                        <Phone className="w-3 h-3 text-brand-accent" />
-                        <span>{app.client_phone}</span>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => handleConfirm(app)}
-                        className="px-4 py-2 rounded-full bg-brand-burgundy hover:bg-brand-dark text-white text-xs font-semibold tracking-wide transition-all shadow-sm cursor-pointer"
-                      >
-                        Confirmar
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleReject(app)}
-                        className="px-4 py-2 rounded-full bg-brand-bg hover:bg-brand-accent/20 text-brand-dark/80 text-xs font-medium border border-brand-accent/40 transition-all cursor-pointer"
-                      >
-                        Rechazar
-                      </button>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Turnos del Día */}
-          <div className="lg:col-span-5 space-y-4">
-            <h2 className="font-cormorant text-2xl font-semibold text-brand-dark">
-              Turnos del día
-            </h2>
-
-            {todayAppointments.length === 0 ? (
-              <div className="bg-brand-bg-light/60 rounded-3xl p-8 border border-dashed border-brand-accent/40 text-center text-sm text-brand-dark/60">
-                No hay turnos confirmados agendados para hoy.
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {todayAppointments.map((app) => (
-                  <div
-                    key={app.id}
-                    className="bg-brand-bg-light rounded-2xl p-4 border border-brand-accent/35 shadow-sm flex items-center justify-between gap-3"
-                  >
-                    <div className="flex items-center gap-3.5">
-                      <div className="font-cormorant text-xl font-semibold text-brand-burgundy">
-                        {app.appointment_time}
-                      </div>
-                      <div>
-                        <p className="font-medium text-sm text-brand-dark">{app.client_name}</p>
-                        <p className="text-xs text-brand-dark/60">
-                          {getServiceName(app.service_id)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <span className="px-3 py-1 rounded-full bg-brand-burgundy text-white text-[10px] font-bold tracking-wider uppercase">
-                      Confirmado
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Module: Mi Disponibilidad (Semana) */}
-        <div className="bg-brand-bg-light rounded-3xl p-6 sm:p-8 border border-brand-accent/35 shadow-sm">
-          <div className="mb-6">
-            <h2 className="font-cormorant text-2xl font-semibold text-brand-dark mb-1">
-              Mi disponibilidad
-            </h2>
-            <p className="text-xs sm:text-sm text-brand-dark/60">
-              Tocá un día para abrirlo o cerrarlo. Horario base 10:00 a 19:00.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
-            {daysMap.map(({ day, name, label }) => {
-              const schedule = weeklySchedule.find((s) => s.day_of_week === day);
-              const isOpen = schedule ? schedule.is_open : false;
-
-              return (
-                <button
-                  key={day}
-                  type="button"
-                  onClick={() => handleToggleDay(day, isOpen)}
-                  className={`p-4 rounded-2xl flex flex-col items-center justify-center transition-all duration-200 cursor-pointer text-center border ${
-                    isOpen
-                      ? 'bg-brand-burgundy text-brand-bg-light border-brand-burgundy shadow-sm hover:scale-[1.02]'
-                      : 'bg-brand-bg/40 text-brand-dark/60 border-dashed border-brand-accent/50 hover:border-brand-burgundy/50'
-                  }`}
-                >
-                  <span className="text-xs font-semibold tracking-wider mb-1">{name}</span>
-                  <span className="text-[11px] uppercase font-bold tracking-wider">
-                    {isOpen ? 'Abierto' : 'Cerrado'}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+          </>
+        )}
       </main>
     </div>
   );

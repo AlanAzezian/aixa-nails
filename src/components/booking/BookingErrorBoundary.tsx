@@ -3,6 +3,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Sparkles, MessageCircle, RefreshCw } from 'lucide-react';
 import { DEFAULT_SERVICES } from '@/lib/bookingService';
+import WhatsAppLink from '@/components/WhatsAppLink';
 
 interface Props {
   children: ReactNode;
@@ -43,10 +44,7 @@ export default class BookingErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       const selectedService =
         DEFAULT_SERVICES.find((s) => s.id === this.state.selectedServiceId) || DEFAULT_SERVICES[0];
-      const whatsappMsg = encodeURIComponent(
-        `Hola Aixa! Quiero coordinar un turno para *${selectedService.name}* (desde $${selectedService.price.toLocaleString('es-AR')}). ¿Tenés disponibilidad para los próximos días?`
-      );
-      const whatsappUrl = `https://wa.me/?text=${whatsappMsg}`;
+      const whatsappText = `Hola Aixa! Quiero coordinar un turno para *${selectedService.name}* (desde $${selectedService.price.toLocaleString('es-AR')}). ¿Tenés disponibilidad para los próximos días?`;
 
       return (
         <div className="w-full max-w-2xl mx-auto my-8 p-6 sm:p-10 rounded-[32px] bg-brand-bg-light border border-brand-accent/40 shadow-xl text-center">
@@ -92,15 +90,13 @@ export default class BookingErrorBoundary extends Component<Props, State> {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <WhatsAppLink
+              text={whatsappText}
               className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-brand-burgundy hover:bg-brand-dark text-white text-sm font-medium flex items-center justify-center gap-2 transition-all shadow-md hover:scale-[1.01]"
             >
               <MessageCircle className="w-4 h-4 text-brand-accent" />
               <span>Coordinar {selectedService.name} por WhatsApp</span>
-            </a>
+            </WhatsAppLink>
 
             <button
               type="button"

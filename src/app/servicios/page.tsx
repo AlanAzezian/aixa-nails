@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { MessageCircle, ArrowRight } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import WhatsAppLink from '@/components/WhatsAppLink';
 import { fetchServices, DEFAULT_SERVICES } from '@/lib/bookingService';
 import { Service } from '@/types/database';
 
@@ -156,15 +157,13 @@ export default function ServiciosPage() {
               </p>
             </div>
 
-            <a
-              href="https://wa.me/?text=Hola%20Aixa!%20Tengo%20una%20foto%20de%20referencia%20para%20hacerme%20las%20u%C3%B1as,%20%C2%BFte%20la%20puedo%20mandar?"
-              target="_blank"
-              rel="noopener noreferrer"
+            <WhatsAppLink
+              text="Hola Aixa! Tengo una foto de referencia para hacerme las uñas, ¿te la puedo mandar?"
               className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full bg-brand-burgundy hover:bg-brand-dark text-white font-medium text-sm tracking-wide shadow-md transition-all self-start sm:self-auto flex-shrink-0"
             >
               <MessageCircle className="w-4 h-4 text-brand-accent" />
               <span>Coordinar turno</span>
-            </a>
+            </WhatsAppLink>
           </div>
         </div>
       </main>

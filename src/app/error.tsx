@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { RefreshCw, MessageCircle, Home } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import WhatsAppLink from '@/components/WhatsAppLink';
 
 export default function GlobalError({
   error,
@@ -42,15 +43,13 @@ export default function GlobalError({
               <span>Reintentar</span>
             </button>
 
-            <a
-              href="https://wa.me/?text=Hola%20Aixa!%20Quiero%20consultar%20por%20un%20turno%20para%20u%C3%B1as."
-              target="_blank"
-              rel="noopener noreferrer"
+            <WhatsAppLink
+              text="Hola Aixa! Quiero consultar por un turno para uñas."
               className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-brand-bg-light hover:bg-brand-accent/20 border border-brand-accent/50 text-brand-dark text-sm font-medium flex items-center justify-center gap-2 transition-all shadow-sm"
             >
               <MessageCircle className="w-4 h-4 text-brand-burgundy" />
               <span>Coordinar por WhatsApp</span>
-            </a>
+            </WhatsAppLink>
 
             <Link
               href="/"

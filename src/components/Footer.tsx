@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { MapPin, MessageCircle, Heart } from 'lucide-react';
 import BrandLogo from './BrandLogo';
+import WhatsAppLink from './WhatsAppLink';
 
 function InstagramIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
@@ -58,15 +59,13 @@ export default function Footer() {
             </Link>
 
             {/* WhatsApp */}
-            <Link
-              href="https://wa.me/?text=Hola%20Aixa!%20Te%20escribo%20desde%20la%20web%20para%20coordinar%20un%20turno."
-              target="_blank"
-              rel="noopener noreferrer"
+            <WhatsAppLink
+              text="Hola Aixa! Te escribo desde la web para coordinar un turno."
               className="inline-flex items-center gap-1.5 text-brand-burgundy hover:text-brand-dark transition-colors"
             >
               <MessageCircle className="w-4 h-4 text-brand-burgundy" />
               <span>WhatsApp</span>
-            </Link>
+            </WhatsAppLink>
           </div>
         </div>
 
