@@ -1,21 +1,16 @@
+'use client';
+
 import React, { Suspense } from 'react';
-import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import BookingWizard from '@/components/booking/BookingWizard';
-
-export const metadata: Metadata = {
-  title: 'Reservar Turno | Aixa Nails - San Fernando',
-  description:
-    'Elegí tu servicio, día y horario para tu cita de manicura en Aixa Nails (Virreyes, San Fernando).',
-};
+import BookingErrorBoundary from '@/components/booking/BookingErrorBoundary';
 
 export default function ReservarPage() {
   return (
     <div className="min-h-screen flex flex-col bg-brand-bg text-brand-dark selection:bg-brand-burgundy selection:text-brand-bg-light">
-      {/* Sticky header */}
       <Navbar />
 
       <main className="flex-1 pt-28 sm:pt-36 pb-28 lg:pb-32">
@@ -31,16 +26,19 @@ export default function ReservarPage() {
             </Link>
           </div>
 
-          {/* Booking Flow Wizard */}
-          <Suspense
-            fallback={
-              <div className="w-full h-96 flex items-center justify-center">
-                <span className="w-8 h-8 border-3 border-brand-burgundy/30 border-t-brand-burgundy rounded-full animate-spin" />
-              </div>
-            }
-          >
-            <BookingWizard />
-          </Suspense>
+          {/* Protected with Error Boundary and Suspense */}
+          <BookingErrorBoundary>
+            <Suspense
+              fallback={
+                <div className="w-full min-h-[400px] flex flex-col items-center justify-center gap-3">
+                  <span className="w-9 h-9 border-3 border-brand-burgundy/30 border-t-brand-burgundy rounded-full animate-spin" />
+                  <p className="font-jost text-sm text-brand-dark/60">Cargando sistema de turnos...</p>
+                </div>
+              }
+            >
+              <BookingWizard />
+            </Suspense>
+          </BookingErrorBoundary>
         </div>
       </main>
 

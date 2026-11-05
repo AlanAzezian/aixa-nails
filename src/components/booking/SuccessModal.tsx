@@ -3,7 +3,6 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import confetti from 'canvas-confetti';
 import { Check, Sparkles, MessageCircle, Home, X } from 'lucide-react';
 import { Service } from '@/types/database';
 
@@ -27,18 +26,21 @@ export default function SuccessModal({
   clientPhone,
 }: SuccessModalProps) {
   useEffect(() => {
-    if (isOpen) {
-      // Fire confetti burst
-      try {
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#6B0F24', '#C9939B', '#FDE8E9', '#FFD700'],
+    // Only fire confetti in the browser via dynamic import to guarantee SSR safety
+    if (isOpen && typeof window !== 'undefined') {
+      import('canvas-confetti')
+        .then((confettiModule) => {
+          const confetti = confettiModule.default || confettiModule;
+          confetti({
+            particleCount: 80,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#6B0F24', '#C9939B', '#FDE8E9', '#FFD700'],
+          });
+        })
+        .catch(() => {
+          // Graceful fallback if canvas is not supported
         });
-      } catch {
-        // Fallback silently if canvas not supported
-      }
     }
   }, [isOpen]);
 
