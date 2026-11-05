@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { STANDARD_TIME_SLOTS } from '@/lib/bookingService';
 
 interface TimeStepProps {
   selectedDate: string | null;
@@ -20,6 +21,10 @@ export default function TimeStep({
   onSelectTime,
   isLoading = false,
 }: TimeStepProps) {
+  const safeTimeSlots =
+    Array.isArray(timeSlots) && timeSlots.length > 0 ? timeSlots : STANDARD_TIME_SLOTS;
+  const safeBookedSlots = Array.isArray(bookedSlots) ? bookedSlots : [];
+
   return (
     <div className="space-y-4">
       <div className="flex items-baseline gap-2">
@@ -45,8 +50,8 @@ export default function TimeStep({
       ) : (
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2.5 sm:gap-3">
-            {timeSlots.map((slot) => {
-              const isBooked = bookedSlots.includes(slot);
+            {safeTimeSlots.map((slot) => {
+              const isBooked = safeBookedSlots.includes(slot);
               const isSelected = selectedTime === slot;
 
               if (isBooked) {

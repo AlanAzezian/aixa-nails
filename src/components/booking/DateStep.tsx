@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { WeeklySchedule } from '@/types/database';
+import { DEFAULT_WEEKLY_SCHEDULE } from '@/lib/bookingService';
 
 interface CalendarDay {
   dateStr: string; // YYYY-MM-DD
@@ -35,6 +36,12 @@ export default function DateStep({
     const days: CalendarDay[] = [];
     const today = new Date();
 
+    const safeSchedule =
+      Array.isArray(weeklySchedule) && weeklySchedule.length > 0
+        ? weeklySchedule
+        : DEFAULT_WEEKLY_SCHEDULE;
+    const safeBlocked = Array.isArray(blockedDates) ? blockedDates : [];
+
     const dayFormatter = new Intl.DateTimeFormat('es-AR', { weekday: 'short' });
     const monthFormatter = new Intl.DateTimeFormat('es-AR', { month: 'short' });
 
@@ -50,13 +57,13 @@ export default function DateStep({
       const dayOfWeek = d.getDay(); // 0 is Sunday, 6 is Saturday
 
       // Check weekly schedule
-      const scheduleConfig = weeklySchedule.find((s) => s.day_of_week === dayOfWeek);
+      const scheduleConfig = safeSchedule.find((s) => s.day_of_week === dayOfWeek);
       const isOpenInSchedule = scheduleConfig
         ? scheduleConfig.is_open
         : dayOfWeek !== 0 && dayOfWeek !== 6;
 
       // Check blocked dates
-      const isBlocked = blockedDates.includes(dateStr);
+      const isBlocked = safeBlocked.includes(dateStr);
 
       const isAvailable = isOpenInSchedule && !isBlocked;
 

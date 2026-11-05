@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Clock } from 'lucide-react';
 import { Service } from '@/types/database';
+import { DEFAULT_SERVICES } from '@/lib/bookingService';
 
 interface ServiceStepProps {
   services: Service[];
@@ -18,6 +19,9 @@ export default function ServiceStep({
   onSelectService,
   isLoading = false,
 }: ServiceStepProps) {
+  const safeServices =
+    Array.isArray(services) && services.length > 0 ? services : DEFAULT_SERVICES;
+
   return (
     <div className="space-y-4">
       <div className="flex items-baseline gap-2">
@@ -38,12 +42,14 @@ export default function ServiceStep({
         </div>
       ) : (
         <div className="flex flex-wrap gap-3">
-          {services.map((service) => {
-            const isSelected = selectedService?.id === service.id;
+          {safeServices.map((service, index) => {
+            const isSelected = selectedService?.id === service?.id;
+            const duration = Number(service?.duration_minutes) || 60;
+            const serviceName = service?.name || 'Servicio';
 
             return (
               <motion.button
-                key={service.id}
+                key={service?.id || index}
                 type="button"
                 whileTap={{ scale: 0.97 }}
                 onClick={() => onSelectService(service)}
@@ -53,7 +59,7 @@ export default function ServiceStep({
                     : 'bg-brand-bg-light/90 hover:bg-brand-bg-light text-brand-dark border-brand-accent/40 hover:border-brand-burgundy/60 shadow-sm'
                 }`}
               >
-                <span className="tracking-wide">{service.name}</span>
+                <span className="tracking-wide">{serviceName}</span>
 
                 <span
                   className={`inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full transition-colors ${
@@ -63,7 +69,7 @@ export default function ServiceStep({
                   }`}
                 >
                   <Clock className="w-3 h-3" />
-                  <span>{service.duration_minutes}m</span>
+                  <span>{duration}m</span>
                 </span>
               </motion.button>
             );

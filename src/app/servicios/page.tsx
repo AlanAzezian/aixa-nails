@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Clock, Sparkles, MessageCircle, ArrowRight } from 'lucide-react';
+import { MessageCircle, ArrowRight } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { fetchServices, DEFAULT_SERVICES } from '@/lib/bookingService';
@@ -14,18 +14,38 @@ export default function ServiciosPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function load() {
       try {
         const data = await fetchServices();
-        setServices(data);
+        if (isMounted) {
+          if (Array.isArray(data) && data.length > 0) {
+            setServices(data);
+          } else {
+            setServices(DEFAULT_SERVICES);
+          }
+        }
       } catch (err) {
-        console.error('Error fetching services:', err);
+        console.warn('Error al cargar servicios en página /servicios:', err);
+        if (isMounted) {
+          setServices(DEFAULT_SERVICES);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
+
     load();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  const safeServices = Array.isArray(services) && services.length > 0 ? services : DEFAULT_SERVICES;
 
   return (
     <div className="min-h-screen flex flex-col bg-brand-bg text-brand-dark selection:bg-brand-burgundy selection:text-brand-bg-light">
@@ -63,13 +83,20 @@ export default function ServiciosPage() {
 
           {/* Services List */}
           <div className="space-y-6 mb-16">
-            {services.map((service, index) => {
+            {safeServices.map((service, index) => {
               const formattedNumber = String(index + 1).padStart(2, '0');
-              const formattedPrice = `$${service.price.toLocaleString('es-AR')}`;
+              const priceNumber =
+                typeof service?.price === 'number' && !isNaN(service.price)
+                  ? service.price
+                  : Number(service?.price) || 0;
+              const formattedPrice = `$${priceNumber.toLocaleString('es-AR')}`;
+              const durationMinutes = Number(service?.duration_minutes) || 60;
+              const serviceName = service?.name || 'Servicio';
+              const serviceDesc = service?.description || '';
 
               return (
                 <motion.div
-                  key={service.id}
+                  key={service?.id || index}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -84,11 +111,13 @@ export default function ServiciosPage() {
                     </span>
                     <div>
                       <h2 className="font-cormorant text-2xl sm:text-3xl font-semibold text-brand-dark tracking-tight mb-2">
-                        {service.name}
+                        {serviceName}
                       </h2>
-                      <p className="font-jost text-sm sm:text-base text-brand-dark/75 max-w-xl leading-relaxed">
-                        {service.description}
-                      </p>
+                      {serviceDesc && (
+                        <p className="font-jost text-sm sm:text-base text-brand-dark/75 max-w-xl leading-relaxed">
+                          {serviceDesc}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -96,7 +125,7 @@ export default function ServiciosPage() {
                   <div className="flex items-center justify-between md:justify-end gap-6 sm:gap-8 pt-4 md:pt-0 border-t md:border-t-0 border-brand-accent/20 flex-shrink-0">
                     <div className="text-left md:text-right">
                       <span className="text-[11px] uppercase tracking-wider font-semibold text-brand-dark/50 block">
-                        Duración [{service.duration_minutes}m]
+                        Duración [{durationMinutes}m]
                       </span>
                       <p className="font-jost text-lg font-bold text-brand-burgundy">
                         Desde [{formattedPrice}]
@@ -104,7 +133,7 @@ export default function ServiciosPage() {
                     </div>
 
                     <Link
-                      href={`/reservar?serviceId=${service.id}`}
+                      href={`/reservar?serviceId=${service?.id || '1'}`}
                       className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-brand-burgundy hover:bg-brand-dark text-white font-medium text-sm tracking-wide shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
                     >
                       <span>Reservar</span>
@@ -116,7 +145,7 @@ export default function ServiciosPage() {
             })}
           </div>
 
-          {/* Bottom Custom Design Callout Banner (from PDF page 3) */}
+          {/* Bottom Custom Design Callout Banner */}
           <div className="rounded-3xl p-8 sm:p-10 border-2 border-dashed border-brand-burgundy/30 bg-brand-bg-light/60 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div>
               <h3 className="font-cormorant text-2xl sm:text-3xl font-semibold text-brand-dark mb-1">

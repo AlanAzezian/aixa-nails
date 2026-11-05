@@ -28,4 +28,30 @@ export const isSupabaseConfigured = Boolean(
 const supabaseUrl = getValidUrl(rawUrl);
 const supabaseAnonKey = getValidKey(rawKey);
 
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
+function createSafeBrowserClient() {
+  try {
+    return createBrowserClient(supabaseUrl, supabaseAnonKey);
+  } catch (err) {
+    console.warn('Error inicializando Supabase client:', err);
+    // Fallback proxy to prevent runtime crashes during SSR / build
+    return {
+      from: () => ({
+        select: () => ({
+          eq: () => Promise.resolve({ data: null, error: new Error('Supabase client uninitialized') }),
+          order: () => Promise.resolve({ data: null, error: new Error('Supabase client uninitialized') }),
+          neq: () => Promise.resolve({ data: null, error: new Error('Supabase client uninitialized') }),
+        }),
+        insert: () => ({
+          select: () => ({
+            single: () => Promise.resolve({ data: null, error: new Error('Supabase client uninitialized') }),
+          }),
+        }),
+      }),
+      auth: {
+        getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+      },
+    } as unknown as ReturnType<typeof createBrowserClient>;
+  }
+}
+
+export const supabase = createSafeBrowserClient();

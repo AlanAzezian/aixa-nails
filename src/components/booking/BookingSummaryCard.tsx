@@ -34,8 +34,13 @@ export default function BookingSummaryCard({
       clientPhone.trim().length >= 6
   );
 
+  const priceVal =
+    typeof selectedService?.price === 'number' && !isNaN(selectedService.price)
+      ? selectedService.price
+      : Number(selectedService?.price) || 0;
+
   const formattedPrice = selectedService
-    ? `$${selectedService.price.toLocaleString('es-AR')}`
+    ? `$${priceVal.toLocaleString('es-AR')}`
     : '[$ PRECIO]';
 
   // Desktop Sticky Card view
