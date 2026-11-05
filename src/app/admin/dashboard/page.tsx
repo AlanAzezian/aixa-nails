@@ -33,7 +33,8 @@ import BrandLogo from '@/components/BrandLogo';
 import GalleryManager from '@/components/admin/GalleryManager';
 import SiteSettingsManager from '@/components/admin/SiteSettingsManager';
 
-type AdminTab = 'agenda' | 'solicitudes' | 'disponibilidad' | 'galeria' | 'ajustes';
+type AdminTab = 'agenda' | 'galeria' | 'ajustes';
+type AgendaSubView = 'all' | 'pending' | 'today' | 'schedule';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -43,6 +44,7 @@ export default function AdminDashboardPage() {
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [activeTab, setActiveTab] = useState<AdminTab>('agenda');
+  const [agendaSubView, setAgendaSubView] = useState<AgendaSubView>('all');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [todayStr, setTodayStr] = useState('2026-11-05');
   const [todayFormatted, setTodayFormatted] = useState('Hoy');
@@ -107,7 +109,7 @@ export default function AdminDashboardPage() {
     const cleanPhone = appointment.client_phone.replace(/\D/g, '');
     const serviceName = getServiceName(appointment.service_id);
     const text = encodeURIComponent(
-      `Hola ${appointment.client_name}! Te confirmo tu turno para ${serviceName} el ${appointment.appointment_date} a las ${appointment.appointment_time} hs en Aixa Nails (Virreyes). Te espero!`
+      `Hola ${appointment.client_name}! Te confirmo tu turno para ${serviceName} el ${appointment.appointment_date} a las ${appointment.appointment_time} hs con Aixa Nails a domicilio (Zona Norte). Te espero!`
     );
     const waUrl = `https://wa.me/${cleanPhone.startsWith('54') ? cleanPhone : `549${cleanPhone}`}?text=${text}`;
 
@@ -175,52 +177,26 @@ export default function AdminDashboardPage() {
             </span>
           </div>
 
-          {/* Navigation Items */}
+          {/* Navigation Items: Agenda, Galería, Ajustes */}
           <nav className="mt-6 space-y-1.5 text-sm font-medium">
             <button
               type="button"
               onClick={() => setActiveTab('agenda')}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all cursor-pointer ${
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all cursor-pointer ${
                 activeTab === 'agenda'
                   ? 'bg-brand-burgundy text-white shadow-md'
                   : 'text-brand-bg-light/75 hover:bg-white/5 hover:text-white'
               }`}
             >
-              <Calendar className="w-4 h-4 text-brand-accent" />
-              <span>Agenda</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('solicitudes')}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all cursor-pointer ${
-                activeTab === 'solicitudes'
-                  ? 'bg-brand-burgundy text-white shadow-md'
-                  : 'text-brand-bg-light/75 hover:bg-white/5 hover:text-white'
-              }`}
-            >
               <div className="flex items-center gap-3">
-                <Clock className="w-4 h-4 text-brand-accent" />
-                <span>Solicitudes</span>
+                <Calendar className="w-4 h-4 text-brand-accent" />
+                <span>Agenda</span>
               </div>
               {pendingAppointments.length > 0 && (
                 <span className="px-2 py-0.5 rounded-full bg-brand-accent text-brand-dark text-xs font-bold">
                   {pendingAppointments.length}
                 </span>
               )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('disponibilidad')}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all cursor-pointer ${
-                activeTab === 'disponibilidad'
-                  ? 'bg-brand-burgundy text-white shadow-md'
-                  : 'text-brand-bg-light/75 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              <CheckCircle className="w-4 h-4 text-brand-accent" />
-              <span>Horarios y Días</span>
             </button>
 
             <button
@@ -313,34 +289,14 @@ export default function AdminDashboardPage() {
                 setActiveTab('agenda');
                 setMobileMenuOpen(false);
               }}
-              className="w-full text-left py-2 px-3 rounded-lg hover:bg-white/5"
-            >
-              Agenda y Turnos
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab('solicitudes');
-                setMobileMenuOpen(false);
-              }}
               className="w-full text-left py-2 px-3 rounded-lg hover:bg-white/5 flex justify-between items-center"
             >
-              <span>Solicitudes</span>
+              <span>Agenda y Turnos</span>
               {pendingAppointments.length > 0 && (
                 <span className="px-2 py-0.5 rounded-full bg-brand-accent text-brand-dark text-xs font-bold">
                   {pendingAppointments.length}
                 </span>
               )}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab('disponibilidad');
-                setMobileMenuOpen(false);
-              }}
-              className="w-full text-left py-2 px-3 rounded-lg hover:bg-white/5"
-            >
-              Mi Disponibilidad
             </button>
             <button
               type="button"
@@ -388,10 +344,6 @@ export default function AdminDashboardPage() {
                 ? 'Galería de Trabajos'
                 : activeTab === 'ajustes'
                 ? 'Ajustes del Sitio'
-                : activeTab === 'solicitudes'
-                ? 'Solicitudes de Turnos'
-                : activeTab === 'disponibilidad'
-                ? 'Días y Horarios'
                 : `Agenda · ${todayFormatted}`}
             </h1>
           </div>
@@ -413,10 +365,8 @@ export default function AdminDashboardPage() {
         {/* Tab 2: Ajustes del Sitio */}
         {activeTab === 'ajustes' && <SiteSettingsManager />}
 
-        {/* Tab 3, 4, 5: Agenda, Solicitudes, Disponibilidad */}
-        {(activeTab === 'agenda' ||
-          activeTab === 'solicitudes' ||
-          activeTab === 'disponibilidad') && (
+        {/* Tab 3: Agenda Principal */}
+        {activeTab === 'agenda' && (
           <>
             {/* WhatsApp Confirmation Toast / Banner */}
             <AnimatePresence>
@@ -459,9 +409,12 @@ export default function AdminDashboardPage() {
             </AnimatePresence>
 
             {/* 3 Metric KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
               {/* Confirmed Today */}
-              <div className="bg-brand-bg-light rounded-3xl p-6 border border-brand-accent/35 shadow-sm">
+              <div
+                onClick={() => setAgendaSubView('today')}
+                className="bg-brand-bg-light rounded-3xl p-6 border border-brand-accent/35 shadow-sm cursor-pointer hover:border-brand-burgundy/40 transition-all"
+              >
                 <span className="text-xs uppercase tracking-wider font-semibold text-brand-dark/60 block mb-2">
                   Turnos confirmados (hoy)
                 </span>
@@ -471,7 +424,10 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Pending Requests */}
-              <div className="bg-brand-bg-light rounded-3xl p-6 border border-brand-accent/35 shadow-sm">
+              <div
+                onClick={() => setAgendaSubView('pending')}
+                className="bg-brand-bg-light rounded-3xl p-6 border border-brand-accent/35 shadow-sm cursor-pointer hover:border-brand-burgundy/40 transition-all"
+              >
                 <span className="text-xs uppercase tracking-wider font-semibold text-brand-dark/60 block mb-2">
                   Solicitudes pendientes
                 </span>
@@ -481,7 +437,10 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Open Days */}
-              <div className="bg-brand-bg-light rounded-3xl p-6 border border-brand-accent/35 shadow-sm">
+              <div
+                onClick={() => setAgendaSubView('schedule')}
+                className="bg-brand-bg-light rounded-3xl p-6 border border-brand-accent/35 shadow-sm cursor-pointer hover:border-brand-burgundy/40 transition-all"
+              >
                 <span className="text-xs uppercase tracking-wider font-semibold text-brand-dark/60 block mb-2">
                   Días abiertos esta semana
                 </span>
@@ -491,157 +450,245 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            {/* 2 Main Modules Grid: Solicitudes Nuevas & Turnos del Día */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
-              {/* Solicitudes Nuevas */}
-              <div className="lg:col-span-7 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-cormorant text-2xl font-semibold text-brand-dark">
-                    Solicitudes nuevas
-                  </h2>
-                  <span className="text-xs text-brand-dark/60">
-                    {pendingAppointments.length} pendientes
+            {/* Sub-view switcher pills */}
+            <div className="flex flex-wrap items-center gap-2 mb-8">
+              <button
+                type="button"
+                onClick={() => setAgendaSubView('all')}
+                className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all cursor-pointer ${
+                  agendaSubView === 'all'
+                    ? 'bg-brand-burgundy text-white shadow-sm'
+                    : 'bg-brand-bg-light border border-brand-accent/40 text-brand-dark/70 hover:bg-brand-bg'
+                }`}
+              >
+                Vista general
+              </button>
+              <button
+                type="button"
+                onClick={() => setAgendaSubView('pending')}
+                className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all cursor-pointer flex items-center gap-2 ${
+                  agendaSubView === 'pending'
+                    ? 'bg-brand-burgundy text-white shadow-sm'
+                    : 'bg-brand-bg-light border border-brand-accent/40 text-brand-dark/70 hover:bg-brand-bg'
+                }`}
+              >
+                <span>Solicitudes pendientes</span>
+                {pendingAppointments.length > 0 && (
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                      agendaSubView === 'pending'
+                        ? 'bg-white text-brand-burgundy'
+                        : 'bg-brand-burgundy text-white'
+                    }`}
+                  >
+                    {pendingAppointments.length}
                   </span>
-                </div>
-
-                {pendingAppointments.length === 0 ? (
-                  <div className="bg-brand-bg-light/60 rounded-3xl p-8 border border-dashed border-brand-accent/40 text-center text-sm text-brand-dark/60">
-                    No hay solicitudes pendientes en este momento.
-                  </div>
-                ) : (
-                  <div className="space-y-3.5">
-                    {pendingAppointments.map((app) => (
-                      <motion.div
-                        key={app.id}
-                        layout
-                        className="bg-brand-bg-light rounded-2xl p-5 border border-brand-accent/35 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                      >
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-brand-dark text-base">
-                              {app.client_name}
-                            </span>
-                            <span className="text-xs text-brand-dark/50">·</span>
-                            <span className="text-xs font-medium text-brand-burgundy">
-                              {app.appointment_date} · {app.appointment_time} hs
-                            </span>
-                          </div>
-
-                          <p className="text-xs text-brand-dark/75 font-normal">
-                            {getServiceName(app.service_id)}
-                          </p>
-
-                          {app.notes && (
-                            <p className="text-xs text-brand-dark/60 italic mt-1 bg-brand-bg/50 px-2 py-0.5 rounded-md inline-block">
-                              Nota: {app.notes}
-                            </p>
-                          )}
-
-                          <div className="flex items-center gap-1.5 text-xs text-brand-dark/60 mt-1">
-                            <Phone className="w-3 h-3 text-brand-accent" />
-                            <span>{app.client_phone}</span>
-                          </div>
-                        </div>
-
-                        {/* Actions */}
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          <button
-                            type="button"
-                            onClick={() => handleConfirm(app)}
-                            className="px-4 py-2 rounded-full bg-brand-burgundy hover:bg-brand-dark text-white text-xs font-semibold tracking-wide transition-all shadow-sm cursor-pointer"
-                          >
-                            Confirmar
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleReject(app)}
-                            className="px-4 py-2 rounded-full bg-brand-bg hover:bg-brand-accent/20 text-brand-dark/80 text-xs font-medium border border-brand-accent/40 transition-all cursor-pointer"
-                          >
-                            Rechazar
-                          </button>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
                 )}
-              </div>
-
-              {/* Turnos del Día */}
-              <div className="lg:col-span-5 space-y-4">
-                <h2 className="font-cormorant text-2xl font-semibold text-brand-dark">
-                  Turnos del día
-                </h2>
-
-                {todayAppointments.length === 0 ? (
-                  <div className="bg-brand-bg-light/60 rounded-3xl p-8 border border-dashed border-brand-accent/40 text-center text-sm text-brand-dark/60">
-                    No hay turnos confirmados agendados para hoy.
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {todayAppointments.map((app) => (
-                      <div
-                        key={app.id}
-                        className="bg-brand-bg-light rounded-2xl p-4 border border-brand-accent/35 shadow-sm flex items-center justify-between gap-3"
-                      >
-                        <div className="flex items-center gap-3.5">
-                          <div className="font-cormorant text-xl font-semibold text-brand-burgundy">
-                            {app.appointment_time}
-                          </div>
-                          <div>
-                            <p className="font-medium text-sm text-brand-dark">{app.client_name}</p>
-                            <p className="text-xs text-brand-dark/60">
-                              {getServiceName(app.service_id)}
-                            </p>
-                          </div>
-                        </div>
-
-                        <span className="px-3 py-1 rounded-full bg-brand-burgundy text-white text-[10px] font-bold tracking-wider uppercase">
-                          Confirmado
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAgendaSubView('today')}
+                className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all cursor-pointer ${
+                  agendaSubView === 'today'
+                    ? 'bg-brand-burgundy text-white shadow-sm'
+                    : 'bg-brand-bg-light border border-brand-accent/40 text-brand-dark/70 hover:bg-brand-bg'
+                }`}
+              >
+                Turnos de hoy ({todayAppointments.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setAgendaSubView('schedule')}
+                className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all cursor-pointer ${
+                  agendaSubView === 'schedule'
+                    ? 'bg-brand-burgundy text-white shadow-sm'
+                    : 'bg-brand-bg-light border border-brand-accent/40 text-brand-dark/70 hover:bg-brand-bg'
+                }`}
+              >
+                Mi disponibilidad semanal
+              </button>
             </div>
+
+            {/* Modules Grid: Solicitudes Nuevas & Turnos del Día */}
+            {(agendaSubView === 'all' ||
+              agendaSubView === 'pending' ||
+              agendaSubView === 'today') && (
+              <div
+                className={`grid gap-8 mb-10 ${
+                  agendaSubView === 'all'
+                    ? 'grid-cols-1 lg:grid-cols-12'
+                    : 'grid-cols-1'
+                }`}
+              >
+                {/* Solicitudes Nuevas */}
+                {(agendaSubView === 'all' || agendaSubView === 'pending') && (
+                  <div
+                    className={`${
+                      agendaSubView === 'all' ? 'lg:col-span-7' : 'w-full'
+                    } space-y-4`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <h2 className="font-cormorant text-2xl font-semibold text-brand-dark">
+                        Solicitudes pendientes
+                      </h2>
+                      <span className="text-xs text-brand-dark/60">
+                        {pendingAppointments.length} pendientes
+                      </span>
+                    </div>
+
+                    {pendingAppointments.length === 0 ? (
+                      <div className="bg-brand-bg-light/60 rounded-3xl p-8 border border-dashed border-brand-accent/40 text-center text-sm text-brand-dark/60">
+                        No hay solicitudes pendientes en este momento.
+                      </div>
+                    ) : (
+                      <div className="space-y-3.5">
+                        {pendingAppointments.map((app) => (
+                          <motion.div
+                            key={app.id}
+                            layout
+                            className="bg-brand-bg-light rounded-2xl p-5 border border-brand-accent/35 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                          >
+                            <div>
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-medium text-brand-dark text-base">
+                                  {app.client_name}
+                                </span>
+                                <span className="text-xs text-brand-dark/50">·</span>
+                                <span className="text-xs font-medium text-brand-burgundy">
+                                  {app.appointment_date} · {app.appointment_time} hs
+                                </span>
+                              </div>
+
+                              <p className="text-xs text-brand-dark/75 font-normal">
+                                {getServiceName(app.service_id)}
+                              </p>
+
+                              {app.notes && (
+                                <p className="text-xs text-brand-dark/60 italic mt-1 bg-brand-bg/50 px-2 py-0.5 rounded-md inline-block">
+                                  Nota: {app.notes}
+                                </p>
+                              )}
+
+                              <div className="flex items-center gap-1.5 text-xs text-brand-dark/60 mt-1">
+                                <Phone className="w-3 h-3 text-brand-accent" />
+                                <span>{app.client_phone}</span>
+                              </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => handleConfirm(app)}
+                                className="px-4 py-2 rounded-full bg-brand-burgundy hover:bg-brand-dark text-white text-xs font-semibold tracking-wide transition-all shadow-sm cursor-pointer"
+                              >
+                                Confirmar
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleReject(app)}
+                                className="px-4 py-2 rounded-full bg-brand-bg hover:bg-brand-accent/20 text-brand-dark/80 text-xs font-medium border border-brand-accent/40 transition-all cursor-pointer"
+                              >
+                                Rechazar
+                              </button>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Turnos del Día */}
+                {(agendaSubView === 'all' || agendaSubView === 'today') && (
+                  <div
+                    className={`${
+                      agendaSubView === 'all' ? 'lg:col-span-5' : 'w-full'
+                    } space-y-4`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <h2 className="font-cormorant text-2xl font-semibold text-brand-dark">
+                        Turnos del día
+                      </h2>
+                      <span className="text-xs text-brand-dark/60">
+                        {todayAppointments.length} turnos hoy
+                      </span>
+                    </div>
+
+                    {todayAppointments.length === 0 ? (
+                      <div className="bg-brand-bg-light/60 rounded-3xl p-8 border border-dashed border-brand-accent/40 text-center text-sm text-brand-dark/60">
+                        No hay turnos confirmados agendados para hoy.
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {todayAppointments.map((app) => (
+                          <div
+                            key={app.id}
+                            className="bg-brand-bg-light rounded-2xl p-4 border border-brand-accent/35 shadow-sm flex items-center justify-between gap-3"
+                          >
+                            <div className="flex items-center gap-3.5">
+                              <div className="font-cormorant text-xl font-semibold text-brand-burgundy">
+                                {app.appointment_time}
+                              </div>
+                              <div>
+                                <p className="font-medium text-sm text-brand-dark">{app.client_name}</p>
+                                <p className="text-xs text-brand-dark/60">
+                                  {getServiceName(app.service_id)}
+                                </p>
+                              </div>
+                            </div>
+
+                            <span className="px-3 py-1 rounded-full bg-brand-burgundy text-white text-[10px] font-bold tracking-wider uppercase">
+                              Confirmado
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Module: Mi Disponibilidad (Semana) */}
-            <div className="bg-brand-bg-light rounded-3xl p-6 sm:p-8 border border-brand-accent/35 shadow-sm">
-              <div className="mb-6">
-                <h2 className="font-cormorant text-2xl font-semibold text-brand-dark mb-1">
-                  Mi disponibilidad
-                </h2>
-                <p className="text-xs sm:text-sm text-brand-dark/60">
-                  Tocá un día para abrirlo o cerrarlo. Horario base 10:00 a 19:00.
-                </p>
-              </div>
+            {(agendaSubView === 'all' || agendaSubView === 'schedule') && (
+              <div className="bg-brand-bg-light rounded-3xl p-6 sm:p-8 border border-brand-accent/35 shadow-sm">
+                <div className="mb-6">
+                  <h2 className="font-cormorant text-2xl font-semibold text-brand-dark mb-1">
+                    Mi disponibilidad
+                  </h2>
+                  <p className="text-xs sm:text-sm text-brand-dark/60">
+                    Tocá un día para abrirlo o cerrarlo. Horario base 10:00 a 19:00.
+                  </p>
+                </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
-                {daysMap.map(({ day, name, label }) => {
-                  const schedule = weeklySchedule.find((s) => s.day_of_week === day);
-                  const isOpen = schedule ? schedule.is_open : false;
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
+                  {daysMap.map(({ day, name, label }) => {
+                    const schedule = weeklySchedule.find((s) => s.day_of_week === day);
+                    const isOpen = schedule ? schedule.is_open : false;
 
-                  return (
-                    <button
-                      key={day}
-                      type="button"
-                      onClick={() => handleToggleDay(day, isOpen)}
-                      className={`p-4 rounded-2xl flex flex-col items-center justify-center transition-all duration-200 cursor-pointer text-center border ${
-                        isOpen
-                          ? 'bg-brand-burgundy text-brand-bg-light border-brand-burgundy shadow-sm hover:scale-[1.02]'
-                          : 'bg-brand-bg/40 text-brand-dark/60 border-dashed border-brand-accent/50 hover:border-brand-burgundy/50'
-                      }`}
-                    >
-                      <span className="text-xs font-semibold tracking-wider mb-1">{name}</span>
-                      <span className="text-[11px] uppercase font-bold tracking-wider">
-                        {isOpen ? 'Abierto' : 'Cerrado'}
-                      </span>
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => handleToggleDay(day, isOpen)}
+                        className={`p-4 rounded-2xl flex flex-col items-center justify-center transition-all duration-200 cursor-pointer text-center border ${
+                          isOpen
+                            ? 'bg-brand-burgundy text-brand-bg-light border-brand-burgundy shadow-sm hover:scale-[1.02]'
+                            : 'bg-brand-bg/40 text-brand-dark/60 border-dashed border-brand-accent/50 hover:border-brand-burgundy/50'
+                        }`}
+                      >
+                        <span className="text-xs font-semibold tracking-wider mb-1">{name}</span>
+                        <span className="text-[11px] uppercase font-bold tracking-wider">
+                          {isOpen ? 'Abierto' : 'Cerrado'}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
           </>
         )}
       </main>

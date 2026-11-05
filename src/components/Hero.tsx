@@ -48,7 +48,7 @@ export default function Hero() {
               transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
               className="font-jost text-base sm:text-lg text-brand-dark/80 max-w-lg mb-8 leading-relaxed font-normal"
             >
-              Esmaltado semipermanente, polygel y soft gel en Virreyes, San Fernando. Elegí tu
+              Esmaltado semipermanente, polygel y soft gel a domicilio en Zona Norte. Elegí tu
               servicio y coordiná tu turno en un minuto.
             </motion.p>
 

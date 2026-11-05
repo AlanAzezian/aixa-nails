@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MapPin, MessageCircle, Heart } from 'lucide-react';
 import BrandLogo from './BrandLogo';
 import WhatsAppLink from './WhatsAppLink';
+import { fetchSiteSettings, DEFAULT_LOCATION_TEXT } from '@/lib/siteSettings';
 
 function InstagramIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
@@ -27,6 +28,16 @@ function InstagramIcon({ className = 'w-4 h-4' }: { className?: string }) {
 }
 
 export default function Footer() {
+  const [locationText, setLocationText] = useState(DEFAULT_LOCATION_TEXT);
+
+  useEffect(() => {
+    fetchSiteSettings().then((settings) => {
+      if (settings?.location_text) {
+        setLocationText(settings.location_text);
+      }
+    });
+  }, []);
+
   return (
     <footer className="border-t border-brand-accent/25 bg-brand-bg-light/60 py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,7 +55,7 @@ export default function Footer() {
             {/* Location */}
             <div className="inline-flex items-center gap-1.5 text-brand-dark/80">
               <MapPin className="w-4 h-4 text-brand-burgundy" />
-              <span>Virreyes, San Fernando</span>
+              <span>{locationText}</span>
             </div>
 
             {/* Instagram */}

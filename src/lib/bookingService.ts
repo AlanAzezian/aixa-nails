@@ -93,17 +93,26 @@ export async function fetchServices(): Promise<Service[]> {
       return DEFAULT_SERVICES;
     }
 
-    const sanitized: Service[] = (data as Service[])
+    const sanitized: Service[] = (data as any[])
       .filter((s) => s && s.name)
-      .map((s, idx) => ({
-        id: String(s.id || idx + 1),
-        name: String(s.name),
-        description: s.description ? String(s.description) : '',
-        duration_minutes: Number(s.duration_minutes) || 60,
-        price: typeof s.price === 'number' && !isNaN(s.price) ? s.price : Number(s.price) || 0,
-        is_active: s.is_active ?? true,
-        order_index: Number(s.order_index) || idx + 1,
-      }));
+      .map((s, idx) => {
+        const rawPrice = s.price ?? s.base_price;
+        const priceNum =
+          typeof rawPrice === 'number' && !isNaN(rawPrice)
+            ? rawPrice
+            : Number(rawPrice) || 0;
+
+        return {
+          id: String(s.id || idx + 1),
+          name: String(s.name),
+          description: s.description ? String(s.description) : '',
+          duration_minutes: Number(s.duration_minutes) || 60,
+          price: priceNum,
+          base_price: priceNum,
+          is_active: s.is_active ?? true,
+          order_index: Number(s.order_index) || idx + 1,
+        };
+      });
 
     return sanitized.length > 0 ? sanitized : DEFAULT_SERVICES;
   } catch (err) {
@@ -240,5 +249,157 @@ export async function saveAppointment(
   } catch (err: unknown) {
     console.warn('No se pudo contactar con Supabase, reserva continuada en modo seguro:', err);
     return { success: true, data: appointment as Appointment };
+  }
+}
+
+// ---------------------------------------------------------------------
+// CRUD completo de Servicios (Admin)
+// ---------------------------------------------------------------------
+
+export async function createService(newService: {
+  name: string;
+  description?: string;
+  duration_minutes: number;
+  price: number;
+}): Promise<{ ok: boolean; service?: Service; error?: string }> {
+  const price = Math.max(0, Math.round(newService.price));
+  const duration = Math.max(15, Math.round(newService.duration_minutes));
+  const name = newService.name.trim();
+
+  if (!name) return { ok: false, error: 'Ingresá el nombre del servicio.' };
+
+  if (!isSupabaseConfigured) {
+    const created: Service = {
+      id: String(Date.now()),
+      name,
+      description: newService.description?.trim() || null,
+      duration_minutes: duration,
+      price,
+      base_price: price,
+      is_active: true,
+      order_index: DEFAULT_SERVICES.length + 1,
+    };
+    DEFAULT_SERVICES.push(created);
+    return { ok: true, service: created };
+  }
+
+  try {
+    const payload: Record<string, any> = {
+      name,
+      description: newService.description?.trim() || null,
+      duration_minutes: duration,
+      price,
+      base_price: price,
+      is_active: true,
+      order_index: 99,
+    };
+
+    let { data, error } = await supabase.from('services').insert([payload]).select().single();
+
+    // Compatibilidad en caso de que solo exista una de las dos columnas
+    if (error && error.message?.includes('base_price')) {
+      delete payload.base_price;
+      const retry = await supabase.from('services').insert([payload]).select().single();
+      data = retry.data;
+      error = retry.error;
+    } else if (error && error.message?.includes('price')) {
+      delete payload.price;
+      const retry = await supabase.from('services').insert([payload]).select().single();
+      data = retry.data;
+      error = retry.error;
+    }
+
+    if (error || !data) {
+      return { ok: false, error: error?.message || 'No se pudo crear el servicio en Supabase.' };
+    }
+
+    const rawPrice = (data as any).price ?? (data as any).base_price ?? price;
+    const priceNum = typeof rawPrice === 'number' && !isNaN(rawPrice) ? rawPrice : Number(rawPrice) || 0;
+
+    return {
+      ok: true,
+      service: {
+        id: String(data.id),
+        name: String(data.name),
+        description: data.description || '',
+        duration_minutes: Number(data.duration_minutes) || duration,
+        price: priceNum,
+        base_price: priceNum,
+        is_active: data.is_active ?? true,
+        order_index: Number(data.order_index) || 0,
+      },
+    };
+  } catch (err: any) {
+    return { ok: false, error: err?.message || 'Error inesperado al crear servicio.' };
+  }
+}
+
+export async function deleteService(id: string): Promise<{ ok: boolean; error?: string }> {
+  if (!isSupabaseConfigured) {
+    const idx = DEFAULT_SERVICES.findIndex((s) => s.id === id);
+    if (idx !== -1) DEFAULT_SERVICES.splice(idx, 1);
+    return { ok: true };
+  }
+
+  try {
+    const { error } = await supabase.from('services').delete().eq('id', id);
+    if (error) {
+      // Si hay turnos vinculados que impiden el DELETE físico, aplicamos borrado lógico (is_active: false)
+      const { error: softErr } = await supabase.from('services').update({ is_active: false }).eq('id', id);
+      if (softErr) return { ok: false, error: error.message };
+    }
+    return { ok: true };
+  } catch (err: any) {
+    return { ok: false, error: err?.message || 'Error al eliminar servicio.' };
+  }
+}
+
+export async function updateService(
+  id: string,
+  values: { name?: string; description?: string; duration_minutes?: number; price?: number }
+): Promise<{ ok: boolean; error?: string }> {
+  const price = values.price !== undefined ? Math.max(0, Math.round(values.price)) : undefined;
+  const duration = values.duration_minutes !== undefined ? Math.max(15, Math.round(values.duration_minutes)) : undefined;
+
+  const payload: Record<string, any> = {};
+  if (values.name !== undefined) payload.name = values.name.trim();
+  if (values.description !== undefined) payload.description = values.description.trim();
+  if (duration !== undefined) payload.duration_minutes = duration;
+  if (price !== undefined) {
+    payload.price = price;
+    payload.base_price = price;
+  }
+
+  if (!isSupabaseConfigured) {
+    const item = DEFAULT_SERVICES.find((s) => s.id === id);
+    if (item) {
+      if (payload.name) item.name = payload.name;
+      if (payload.description !== undefined) item.description = payload.description;
+      if (duration !== undefined) item.duration_minutes = duration;
+      if (price !== undefined) {
+        item.price = price;
+        item.base_price = price;
+      }
+    }
+    return { ok: true };
+  }
+
+  try {
+    let { error } = await supabase.from('services').update(payload).eq('id', id);
+
+    if (error && error.message?.includes('base_price')) {
+      delete payload.base_price;
+      const retry = await supabase.from('services').update(payload).eq('id', id);
+      error = retry.error;
+    } else if (error && error.message?.includes('price')) {
+      delete payload.price;
+      const retry = await supabase.from('services').update(payload).eq('id', id);
+      error = retry.error;
+    }
+
+    if (error) return { ok: false, error: error.message };
+    return { ok: true };
+  } catch (err: any) {
+    return { ok: false, error: err?.message || 'Error inesperado al actualizar servicio.' };
   }
 }

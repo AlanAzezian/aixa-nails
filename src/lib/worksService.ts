@@ -1,9 +1,9 @@
 import { supabase, isSupabaseConfigured } from './supabase';
-import { Work, WorkCategory, WORK_CATEGORIES } from '@/types/database';
+import { Work, WorkCategory } from '@/types/database';
 
 export const WORKS_BUCKET = 'nail-works';
-export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB (igual al límite del bucket)
-const MAX_IMAGE_DIMENSION = 1600; // px, lado mayor tras la compresión
+export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB
+const MAX_IMAGE_DIMENSION = 1600; // px
 
 type AllowedMime = 'image/jpeg' | 'image/png' | 'image/webp';
 
@@ -13,46 +13,134 @@ const EXTENSION_BY_MIME: Record<AllowedMime, string> = {
   'image/webp': 'webp',
 };
 
+export const DEFAULT_CATEGORIES: string[] = ['Semipermanente', 'Polygel', 'Soft gel'];
+
 // ---------------------------------------------------------------------
-// Lectura pública
+// Categorías dinámicas (Supabase + fallback)
 // ---------------------------------------------------------------------
 
-function isWorkCategory(value: unknown): value is WorkCategory {
-  return typeof value === 'string' && (WORK_CATEGORIES as readonly string[]).includes(value);
+export async function fetchCategories(): Promise<string[]> {
+  if (!isSupabaseConfigured) return DEFAULT_CATEGORIES;
+
+  try {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('name, order_index')
+      .order('order_index', { ascending: true })
+      .order('name', { ascending: true });
+
+    if (error || !data || data.length === 0) {
+      return DEFAULT_CATEGORIES;
+    }
+
+    const names = data.map((c: any) => String(c.name).trim()).filter(Boolean);
+    return names.length > 0 ? names : DEFAULT_CATEGORIES;
+  } catch {
+    return DEFAULT_CATEGORIES;
+  }
 }
 
-function sanitizeWork(row: Record<string, unknown>): Work | null {
+export async function createCategory(
+  name: string
+): Promise<{ ok: boolean; category?: string; error?: string }> {
+  const trimmed = name.trim();
+  if (!trimmed) return { ok: false, error: 'Ingresá un nombre para la categoría.' };
+
+  if (!isSupabaseConfigured) {
+    if (!DEFAULT_CATEGORIES.includes(trimmed)) DEFAULT_CATEGORIES.push(trimmed);
+    return { ok: true, category: trimmed };
+  }
+
+  try {
+    const { error } = await supabase
+      .from('categories')
+      .insert([{ name: trimmed, order_index: 99 }]);
+
+    if (error) {
+      if (error.code === '23505' || error.message?.includes('duplicate')) {
+        return { ok: false, error: 'Esa categoría ya existe.' };
+      }
+      return { ok: false, error: error.message };
+    }
+
+    return { ok: true, category: trimmed };
+  } catch (err: any) {
+    return { ok: false, error: err?.message || 'Error al crear categoría.' };
+  }
+}
+
+export async function deleteCategory(name: string): Promise<{ ok: boolean; error?: string }> {
+  const trimmed = name.trim();
+  if (!isSupabaseConfigured) {
+    const idx = DEFAULT_CATEGORIES.indexOf(trimmed);
+    if (idx !== -1) DEFAULT_CATEGORIES.splice(idx, 1);
+    return { ok: true };
+  }
+
+  try {
+    const { error } = await supabase.from('categories').delete().eq('name', trimmed);
+    if (error) return { ok: false, error: error.message };
+    return { ok: true };
+  } catch (err: any) {
+    return { ok: false, error: err?.message || 'Error al eliminar categoría.' };
+  }
+}
+
+// ---------------------------------------------------------------------
+// Lectura pública de Trabajos
+// ---------------------------------------------------------------------
+
+function sanitizeWork(row: Record<string, unknown>, index = 0): Work | null {
   if (!row || typeof row.image_url !== 'string' || !row.image_url) return null;
   return {
     id: String(row.id),
     title: typeof row.title === 'string' && row.title ? row.title : 'Diseño',
-    category: isWorkCategory(row.category) ? row.category : 'Semipermanente',
+    category: typeof row.category === 'string' && row.category ? row.category : 'Semipermanente',
     image_url: row.image_url,
     is_featured: Boolean(row.is_featured),
+    order_index: typeof row.order_index === 'number' ? row.order_index : index + 1,
     created_at: typeof row.created_at === 'string' ? row.created_at : undefined,
   };
 }
 
 /**
- * Trae los trabajos de la galería. Nunca lanza: ante cualquier error devuelve []
- * para que la UI pública use el fallback de ilustraciones.
+ * Trae los trabajos de la galería ordenados por order_index ascendente y fecha descendente.
  */
 export async function fetchWorks(options: { featuredOnly?: boolean; limit?: number } = {}): Promise<Work[]> {
   if (!isSupabaseConfigured) return [];
 
   try {
-    let query = supabase.from('works').select('*').order('created_at', { ascending: false });
+    let query = supabase
+      .from('works')
+      .select('*')
+      .order('order_index', { ascending: true })
+      .order('created_at', { ascending: false });
+
     if (options.featuredOnly) query = query.eq('is_featured', true);
     if (options.limit) query = query.limit(options.limit);
 
-    const { data, error } = await query;
+    let { data, error } = await query;
+
+    // Si la columna order_index aún no existiera en la instancia remota, reintentar por created_at
+    if (error && error.message?.includes('order_index')) {
+      let fallbackQuery = supabase
+        .from('works')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (options.featuredOnly) fallbackQuery = fallbackQuery.eq('is_featured', true);
+      if (options.limit) fallbackQuery = fallbackQuery.limit(options.limit);
+      const res = await fallbackQuery;
+      data = res.data;
+      error = res.error;
+    }
+
     if (error || !Array.isArray(data)) {
       if (error) console.warn('No se pudo leer la tabla works:', error.message);
       return [];
     }
 
     return data
-      .map((row) => sanitizeWork(row as Record<string, unknown>))
+      .map((row, idx) => sanitizeWork(row as Record<string, unknown>, idx))
       .filter((w): w is Work => w !== null);
   } catch (err) {
     console.warn('Error de red al leer works:', err);
@@ -61,7 +149,30 @@ export async function fetchWorks(options: { featuredOnly?: boolean; limit?: numb
 }
 
 // ---------------------------------------------------------------------
-// Validación de archivos (no confiamos en la extensión ni en file.type)
+// Reordenamiento manual
+// ---------------------------------------------------------------------
+
+export async function updateWorkOrder(
+  id: string,
+  newOrder: number
+): Promise<{ ok: boolean; error?: string }> {
+  if (!isSupabaseConfigured) return { ok: true };
+
+  try {
+    const { error } = await supabase
+      .from('works')
+      .update({ order_index: Math.max(0, Math.round(newOrder)) })
+      .eq('id', id);
+
+    if (error) return { ok: false, error: error.message };
+    return { ok: true };
+  } catch (err: any) {
+    return { ok: false, error: err?.message || 'Error al actualizar orden' };
+  }
+}
+
+// ---------------------------------------------------------------------
+// Validación de archivos
 // ---------------------------------------------------------------------
 
 async function detectMimeFromMagicBytes(file: Blob): Promise<AllowedMime | null> {
@@ -87,7 +198,6 @@ async function detectMimeFromMagicBytes(file: Blob): Promise<AllowedMime | null>
 }
 
 export async function validateImageFile(file: File): Promise<{ ok: true } | { ok: false; error: string }> {
-  // Límite generoso para el original: luego se comprime antes de subir.
   if (file.size > 20 * 1024 * 1024) {
     return { ok: false, error: 'La imagen es demasiado pesada (máximo 20 MB antes de comprimir).' };
   }
@@ -98,11 +208,6 @@ export async function validateImageFile(file: File): Promise<{ ok: true } | { ok
   return { ok: true };
 }
 
-/**
- * Redimensiona (lado mayor ≤ 1600px) y re-codifica a WEBP en el navegador.
- * Además de optimizar el peso, re-codificar elimina metadatos EXIF (ubicación GPS, etc.).
- * Si el navegador no puede procesarla, devuelve el archivo original.
- */
 export async function compressImage(file: File): Promise<Blob> {
   try {
     const bitmap = await createImageBitmap(file);
@@ -121,7 +226,6 @@ export async function compressImage(file: File): Promise<Blob> {
     const blob = await new Promise<Blob | null>((resolve) =>
       canvas.toBlob(resolve, 'image/webp', 0.85)
     );
-    // Safari antiguo puede ignorar webp y devolver png: lo aceptamos igual si es más liviano
     if (!blob || blob.size >= file.size) return file;
     return blob;
   } catch {
@@ -130,7 +234,7 @@ export async function compressImage(file: File): Promise<Blob> {
 }
 
 // ---------------------------------------------------------------------
-// Escritura (solo admin autenticada; RLS lo hace cumplir en Supabase)
+// Escritura de Trabajos
 // ---------------------------------------------------------------------
 
 function storagePathFromPublicUrl(url: string): string | null {
@@ -144,6 +248,7 @@ export async function createWorkWithImage(input: {
   title: string;
   category: WorkCategory;
   isFeatured: boolean;
+  orderIndex?: number;
 }): Promise<{ ok: true; work: Work } | { ok: false; error: string }> {
   if (!isSupabaseConfigured) {
     return { ok: false, error: 'Supabase no está configurado (faltan variables de entorno).' };
@@ -151,7 +256,8 @@ export async function createWorkWithImage(input: {
 
   const title = input.title.trim().slice(0, 120);
   if (!title) return { ok: false, error: 'Poné un título para el diseño.' };
-  if (!isWorkCategory(input.category)) return { ok: false, error: 'Elegí una categoría válida.' };
+  const category = input.category.trim();
+  if (!category) return { ok: false, error: 'Elegí o creá una categoría válida.' };
 
   const validation = await validateImageFile(input.file);
   if (!validation.ok) return validation;
@@ -164,7 +270,6 @@ export async function createWorkWithImage(input: {
   const finalMime = await detectMimeFromMagicBytes(optimized);
   if (!finalMime) return { ok: false, error: 'No se pudo procesar la imagen.' };
 
-  // Nombre generado por nosotros: nunca usamos el nombre original (evita path traversal)
   const now = new Date();
   const path = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${crypto.randomUUID()}.${EXTENSION_BY_MIME[finalMime]}`;
 
@@ -178,14 +283,24 @@ export async function createWorkWithImage(input: {
 
   const { data: publicData } = supabase.storage.from(WORKS_BUCKET).getPublicUrl(path);
 
-  const { data, error: insertError } = await supabase
-    .from('works')
-    .insert([{ title, category: input.category, image_url: publicData.publicUrl, is_featured: input.isFeatured }])
-    .select()
-    .single();
+  const payload: Record<string, any> = {
+    title,
+    category,
+    image_url: publicData.publicUrl,
+    is_featured: input.isFeatured,
+    order_index: input.orderIndex ?? 1,
+  };
+
+  let { data, error: insertError } = await supabase.from('works').insert([payload]).select().single();
+
+  if (insertError && insertError.message?.includes('order_index')) {
+    delete payload.order_index;
+    const retry = await supabase.from('works').insert([payload]).select().single();
+    data = retry.data;
+    insertError = retry.error;
+  }
 
   if (insertError || !data) {
-    // Evitamos archivos huérfanos si falló el registro en la tabla
     await supabase.storage.from(WORKS_BUCKET).remove([path]);
     return { ok: false, error: `La imagen se subió pero no se pudo registrar: ${insertError?.message ?? 'error desconocido'}` };
   }

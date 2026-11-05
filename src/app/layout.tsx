@@ -25,14 +25,13 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
-  title: 'Aixa Nails | Manicurista Profesional en San Fernando',
+  title: 'Aixa Nails | Manicurista Profesional a Domicilio en Zona Norte',
   description:
-    'Uñas con diseño, hechas a tu medida. Esmaltado semipermanente, polygel y soft gel en Virreyes, San Fernando.',
+    'Uñas con diseño, hechas a tu medida. Esmaltado semipermanente, polygel y soft gel a domicilio en Zona Norte.',
   keywords: [
     'manicura',
-    'uñas',
-    'san fernando',
-    'virreyes',
+    'uñas a domicilio',
+    'zona norte',
     'semipermanente',
     'polygel',
     'soft gel',

@@ -5,37 +5,32 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
-import { fetchWorks } from '@/lib/worksService';
-import { Work, WorkCategory, WORK_CATEGORIES } from '@/types/database';
+import { fetchWorks, fetchCategories, DEFAULT_CATEGORIES } from '@/lib/worksService';
+import { Work } from '@/types/database';
 import { SAMPLE_WORKS } from './sampleWorks';
-
-type Filter = 'all' | WorkCategory;
 
 interface DisplayItem {
   id: string;
   title: string;
-  category: WorkCategory;
+  category: string;
   imageUrl?: string;
   illustration?: React.ReactNode;
 }
 
 interface WorksGalleryProps {
-  /** Home: prioriza los trabajos destacados (si no hay, usa los más recientes). */
   preferFeatured?: boolean;
-  /** Cantidad máxima de tarjetas a mostrar. */
   limit?: number;
-  /** Fondo de los botones de filtro inactivos (varía según la sección). */
   inactiveFilterClassName?: string;
   gridClassName?: string;
 }
 
-const FILTERS: { key: Filter; label: string }[] = [
-  { key: 'all', label: 'Todos' },
-  ...WORK_CATEGORIES.map((c) => ({ key: c as Filter, label: c })),
-];
-
 function toDisplayItems(works: Work[]): DisplayItem[] {
-  return works.map((w) => ({ id: w.id, title: w.title, category: w.category, imageUrl: w.image_url }));
+  return works.map((w) => ({
+    id: w.id,
+    title: w.title,
+    category: w.category,
+    imageUrl: w.image_url,
+  }));
 }
 
 export default function WorksGallery({
@@ -44,12 +39,21 @@ export default function WorksGallery({
   inactiveFilterClassName = 'bg-brand-bg-light hover:bg-brand-bg',
   gridClassName = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6',
 }: WorksGalleryProps) {
-  const [activeFilter, setActiveFilter] = useState<Filter>('all');
-  const [works, setWorks] = useState<Work[] | null>(null); // null = cargando
+  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [works, setWorks] = useState<Work[] | null>(null);
+  const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
 
   useEffect(() => {
     let active = true;
 
+    // Cargar categorías dinámicas
+    fetchCategories().then((cats) => {
+      if (active && Array.isArray(cats) && cats.length > 0) {
+        setCategories(cats);
+      }
+    });
+
+    // Cargar fotos de trabajos
     (async () => {
       let result: Work[] = [];
       if (preferFeatured) {
@@ -83,27 +87,41 @@ export default function WorksGallery({
     return toDisplayItems(works);
   }, [isLoading, usingFallback, works, limit]);
 
-  const filteredItems =
-    activeFilter === 'all' ? items : items.filter((item) => item.category === activeFilter);
+  const filters = useMemo(() => {
+    return [
+      { key: 'all', label: 'Todos' },
+      ...categories.map((c) => ({ key: c, label: c })),
+    ];
+  }, [categories]);
+
+  const filteredItems = useMemo(() => {
+    if (activeFilter === 'all') return items;
+    return items.filter(
+      (item) => item.category.trim().toLowerCase() === activeFilter.trim().toLowerCase()
+    );
+  }, [items, activeFilter]);
 
   return (
     <>
-      {/* Filter Pills */}
+      {/* Filter Pills dinámicos */}
       <div className="flex flex-wrap gap-2.5 mb-10">
-        {FILTERS.map((filter) => (
-          <button
-            key={filter.key}
-            type="button"
-            onClick={() => setActiveFilter(filter.key)}
-            className={`px-5 py-2 rounded-full text-xs sm:text-sm font-medium tracking-wide transition-all duration-200 cursor-pointer ${
-              activeFilter === filter.key
-                ? 'bg-brand-burgundy text-brand-bg-light shadow-sm'
-                : `${inactiveFilterClassName} text-brand-dark/80 border border-brand-accent/30`
-            }`}
-          >
-            {filter.label}
-          </button>
-        ))}
+        {filters.map((filter) => {
+          const isSelected = activeFilter === filter.key;
+          return (
+            <button
+              key={filter.key}
+              type="button"
+              onClick={() => setActiveFilter(filter.key)}
+              className={`px-5 py-2 rounded-full text-xs sm:text-sm font-medium tracking-wide transition-all duration-200 cursor-pointer ${
+                isSelected
+                  ? 'bg-brand-burgundy text-brand-bg-light shadow-sm scale-[1.02]'
+                  : `${inactiveFilterClassName} text-brand-dark/80 border border-brand-accent/30 hover:border-brand-burgundy/40`
+              }`}
+            >
+              {filter.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Grid */}

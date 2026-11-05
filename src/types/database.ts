@@ -4,6 +4,7 @@ export interface Service {
   description?: string | null;
   duration_minutes: number;
   price: number;
+  base_price?: number;
   is_active: boolean;
   order_index?: number;
 }
@@ -35,20 +36,30 @@ export interface Appointment {
 }
 
 export const WORK_CATEGORIES = ['Semipermanente', 'Polygel', 'Soft gel'] as const;
-export type WorkCategory = (typeof WORK_CATEGORIES)[number];
+export type WorkCategory = string;
+
+export interface Category {
+  id: string;
+  name: string;
+  order_index?: number;
+  created_at?: string;
+}
 
 export interface Work {
   id: string;
   title: string;
-  category: WorkCategory;
+  category: string;
   image_url: string;
   is_featured: boolean;
+  order_index?: number;
   created_at?: string;
 }
 
 export interface SiteSettings {
   id?: number;
-  whatsapp_phone: string | null; // Solo dígitos, formato internacional (ej: 5491112345678)
+  whatsapp_number?: string | null;
+  whatsapp_phone?: string | null;
+  location_text?: string | null;
   updated_at?: string;
 }
 

@@ -1,6 +1,8 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { SiteSettings } from '@/types/database';
-import { DEFAULT_SERVICES } from './bookingService';
+import { updateService } from './bookingService';
+
+export const DEFAULT_LOCATION_TEXT = 'Zona Norte (Servicio a domicilio)';
 
 /**
  * Normaliza un teléfono argentino al formato que espera wa.me (solo dígitos, con código de país).
@@ -18,17 +20,24 @@ export function normalizeWhatsAppPhone(raw: string): string | null {
   return /^[0-9]{8,15}$/.test(digits) ? digits : null;
 }
 
-/** Construye un enlace wa.me. Sin teléfono, abre WhatsApp para elegir contacto (comportamiento anterior). */
+/** Construye un enlace wa.me. Sin teléfono, abre WhatsApp para elegir contacto. */
 export function buildWhatsAppUrl(text: string, phone?: string | null): string {
   const base = phone ? `https://wa.me/${phone}` : 'https://wa.me/';
   return text ? `${base}?text=${encodeURIComponent(text)}` : base;
 }
 
-// Una sola consulta compartida por todos los componentes de la página
+// Caché de consulta compartida
 let settingsPromise: Promise<SiteSettings | null> | null = null;
 
 export function fetchSiteSettings(options: { force?: boolean } = {}): Promise<SiteSettings | null> {
-  if (!isSupabaseConfigured) return Promise.resolve(null);
+  if (!isSupabaseConfigured) {
+    return Promise.resolve({
+      id: 1,
+      whatsapp_number: null,
+      whatsapp_phone: null,
+      location_text: DEFAULT_LOCATION_TEXT,
+    });
+  }
   if (settingsPromise && !options.force) return settingsPromise;
 
   settingsPromise = (async () => {
@@ -38,14 +47,37 @@ export function fetchSiteSettings(options: { force?: boolean } = {}): Promise<Si
         .select('*')
         .eq('id', 1)
         .maybeSingle();
-      if (error || !data) return null;
-      return data as SiteSettings;
+
+      if (error || !data) {
+        return {
+          id: 1,
+          whatsapp_number: null,
+          whatsapp_phone: null,
+          location_text: DEFAULT_LOCATION_TEXT,
+        };
+      }
+
+      const raw = data as Record<string, any>;
+      const phone = raw.whatsapp_number ?? raw.whatsapp_phone ?? null;
+      const location = raw.location_text || DEFAULT_LOCATION_TEXT;
+
+      return {
+        id: 1,
+        whatsapp_number: phone,
+        whatsapp_phone: phone,
+        location_text: location,
+        updated_at: raw.updated_at,
+      };
     } catch {
-      return null;
+      return {
+        id: 1,
+        whatsapp_number: null,
+        whatsapp_phone: null,
+        location_text: DEFAULT_LOCATION_TEXT,
+      };
     }
   })();
 
-  // Si falló, permitimos reintentar en la próxima llamada
   settingsPromise.then((res) => {
     if (res === null) settingsPromise = null;
   });
@@ -53,63 +85,112 @@ export function fetchSiteSettings(options: { force?: boolean } = {}): Promise<Si
   return settingsPromise;
 }
 
+export async function updateSiteSettings(values: {
+  whatsapp_phone?: string | null;
+  location_text?: string | null;
+}): Promise<{ ok: boolean; settings?: SiteSettings; error?: string }> {
+  const current = (await fetchSiteSettings({ force: false })) || {
+    id: 1,
+    whatsapp_number: null,
+    whatsapp_phone: null,
+    location_text: DEFAULT_LOCATION_TEXT,
+  };
+
+  let phone = current.whatsapp_phone;
+  if (values.whatsapp_phone !== undefined) {
+    const trimmed = (values.whatsapp_phone || '').trim();
+    phone = trimmed ? normalizeWhatsAppPhone(trimmed) : null;
+    if (trimmed && !phone) {
+      return { ok: false, error: 'El número no parece válido. Ej: 11 5544 3322 o +54 9 11 5544 3322.' };
+    }
+  }
+
+  const location =
+    values.location_text !== undefined
+      ? values.location_text?.trim() || DEFAULT_LOCATION_TEXT
+      : current.location_text || DEFAULT_LOCATION_TEXT;
+
+  if (!isSupabaseConfigured) {
+    const updated: SiteSettings = {
+      id: 1,
+      whatsapp_number: phone,
+      whatsapp_phone: phone,
+      location_text: location,
+      updated_at: new Date().toISOString(),
+    };
+    settingsPromise = Promise.resolve(updated);
+    return { ok: true, settings: updated };
+  }
+
+  try {
+    // Intentamos guardar con whatsapp_number y whatsapp_phone simultáneamente
+    const payload: Record<string, any> = {
+      id: 1,
+      whatsapp_number: phone,
+      whatsapp_phone: phone,
+      location_text: location,
+      updated_at: new Date().toISOString(),
+    };
+
+    let { error } = await supabase.from('site_settings').upsert(payload);
+
+    if (error && error.message?.includes('whatsapp_number')) {
+      delete payload.whatsapp_number;
+      const retry = await supabase.from('site_settings').upsert(payload);
+      error = retry.error;
+    } else if (error && error.message?.includes('whatsapp_phone')) {
+      delete payload.whatsapp_phone;
+      const retry = await supabase.from('site_settings').upsert(payload);
+      error = retry.error;
+    }
+
+    if (error && error.message?.includes('location_text')) {
+      delete payload.location_text;
+      const retry = await supabase.from('site_settings').upsert(payload);
+      error = retry.error;
+    }
+
+    if (error) return { ok: false, error: error.message };
+
+    const updated: SiteSettings = {
+      id: 1,
+      whatsapp_number: phone,
+      whatsapp_phone: phone,
+      location_text: location,
+      updated_at: new Date().toISOString(),
+    };
+    settingsPromise = Promise.resolve(updated);
+    return { ok: true, settings: updated };
+  } catch (err: any) {
+    return { ok: false, error: err?.message || 'Error al guardar ajustes' };
+  }
+}
+
 export async function updateWhatsAppPhone(
   rawPhone: string
 ): Promise<{ ok: true; phone: string | null } | { ok: false; error: string }> {
-  const trimmed = rawPhone.trim();
-  const phone = trimmed ? normalizeWhatsAppPhone(trimmed) : null;
-  if (trimmed && !phone) {
-    return { ok: false, error: 'El número no parece válido. Ej: 11 5544 3322 o +54 9 11 5544 3322.' };
+  const res = await updateSiteSettings({ whatsapp_phone: rawPhone });
+  if (res.ok) {
+    return { ok: true, phone: res.settings?.whatsapp_phone ?? null };
   }
+  return { ok: false, error: res.error || 'Error al actualizar WhatsApp' };
+}
 
-  const { error } = await supabase
-    .from('site_settings')
-    .upsert({ id: 1, whatsapp_phone: phone, updated_at: new Date().toISOString() });
-
-  if (error) return { ok: false, error: error.message };
-  settingsPromise = Promise.resolve({ id: 1, whatsapp_phone: phone });
-  return { ok: true, phone };
+export async function updateLocationText(
+  locationText: string
+): Promise<{ ok: true; location_text: string } | { ok: false; error: string }> {
+  const res = await updateSiteSettings({ location_text: locationText });
+  if (res.ok) {
+    return { ok: true, location_text: res.settings?.location_text || DEFAULT_LOCATION_TEXT };
+  }
+  return { ok: false, error: res.error || 'Error al actualizar ubicación' };
 }
 
 export async function updateServiceBasics(
   id: string,
   values: { price: number; duration_minutes: number; name?: string; description?: string }
 ): Promise<{ ok: true } | { ok: false; error: string }> {
-  const price = Math.round(values.price);
-  const duration = Math.round(values.duration_minutes);
-  if (!Number.isFinite(price) || price < 0) return { ok: false, error: 'Precio inválido.' };
-  if (!Number.isFinite(duration) || duration < 15 || duration > 480) {
-    return { ok: false, error: 'La duración debe estar entre 15 y 480 minutos.' };
-  }
-
-  const { data, error } = await supabase
-    .from('services')
-    .update({ price, duration_minutes: duration })
-    .eq('id', id)
-    .select('id');
-
-  if (error) return { ok: false, error: error.message };
-
-  if (!data || data.length === 0) {
-    const defaultSrv = DEFAULT_SERVICES.find((s) => s.id === id);
-    if (defaultSrv) {
-      const { error: upsertErr } = await supabase.from('services').upsert({
-        id,
-        name: values.name || defaultSrv.name,
-        description: values.description || defaultSrv.description,
-        price,
-        duration_minutes: duration,
-        is_active: true,
-        order_index: defaultSrv.order_index,
-      });
-      if (upsertErr) return { ok: false, error: upsertErr.message };
-      return { ok: true };
-    }
-
-    return {
-      ok: false,
-      error: 'No se encontró el servicio para actualizar en la base de datos.',
-    };
-  }
-  return { ok: true };
+  const res = await updateService(id, values);
+  if (res.ok) return { ok: true };
+  return { ok: false, error: res.error || 'Error al actualizar servicio' };
 }

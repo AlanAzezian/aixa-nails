@@ -29,6 +29,13 @@ export default function CustomerDataStep({
         </h2>
       </div>
 
+      <div className="p-3 bg-brand-bg-light/80 rounded-2xl border border-brand-accent/35 text-xs text-brand-dark/75 flex items-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-brand-burgundy shrink-0" />
+        <span>
+          <strong>Servicio a domicilio en Zona Norte:</strong> al confirmar el turno coordinaremos por WhatsApp tu dirección exacta y requerimientos especiales.
+        </span>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Nombre y Apellido */}
         <div>
