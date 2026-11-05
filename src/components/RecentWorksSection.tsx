@@ -133,12 +133,10 @@ export default function RecentWorksSection() {
           </div>
 
           <Link
-            href="https://instagram.com/aaixa.nailss"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/trabajos"
             className="group inline-flex items-center gap-1.5 text-sm font-medium text-brand-burgundy hover:text-brand-dark transition-colors self-start sm:self-auto"
           >
-            <span>Ver todos en Instagram</span>
+            <span>Ver todos</span>
             <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </Link>
         </div>

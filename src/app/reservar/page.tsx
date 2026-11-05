@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
@@ -31,7 +32,15 @@ export default function ReservarPage() {
           </div>
 
           {/* Booking Flow Wizard */}
-          <BookingWizard />
+          <Suspense
+            fallback={
+              <div className="w-full h-96 flex items-center justify-center">
+                <span className="w-8 h-8 border-3 border-brand-burgundy/30 border-t-brand-burgundy rounded-full animate-spin" />
+              </div>
+            }
+          >
+            <BookingWizard />
+          </Suspense>
         </div>
       </main>
 

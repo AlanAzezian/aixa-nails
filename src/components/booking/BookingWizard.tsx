@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import ServiceStep from './ServiceStep';
 import DateStep from './DateStep';
@@ -19,6 +20,9 @@ import {
 import { Service, WeeklySchedule } from '@/types/database';
 
 export default function BookingWizard() {
+  const searchParams = useSearchParams();
+  const serviceIdParam = searchParams.get('serviceId');
+
   // Data states from Supabase
   const [services, setServices] = useState<Service[]>([]);
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule[]>([]);
@@ -58,9 +62,12 @@ export default function BookingWizard() {
         setWeeklySchedule(scheduleRes);
         setBlockedDates(blockedRes);
 
-        // Preselect first service as friendly default
+        // Preselect service: first check URL param serviceId, otherwise fallback to first service
         if (servicesRes.length > 0) {
-          setSelectedService(servicesRes[0]);
+          const matched = serviceIdParam
+            ? servicesRes.find((s) => s.id === serviceIdParam)
+            : null;
+          setSelectedService(matched || servicesRes[0]);
         }
       } catch (err) {
         console.error('Error loading booking data:', err);

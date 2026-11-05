@@ -55,7 +55,7 @@ export default function ServicesSection() {
           </div>
 
           <Link
-            href="/reservar"
+            href="/servicios"
             className="group inline-flex items-center gap-1.5 text-sm font-medium text-brand-burgundy hover:text-brand-dark transition-colors self-start sm:self-auto"
           >
             <span>Ver detalle y precios</span>

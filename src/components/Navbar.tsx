@@ -19,9 +19,9 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { label: 'Inicio', href: '#inicio' },
-    { label: 'Servicios', href: '#servicios' },
-    { label: 'Trabajos', href: '#trabajos' },
+    { label: 'Inicio', href: '/' },
+    { label: 'Servicios', href: '/servicios' },
+    { label: 'Trabajos', href: '/trabajos' },
   ];
 
   return (
