@@ -23,6 +23,7 @@ import { Service, WeeklySchedule } from '@/types/database';
 export default function BookingWizard() {
   const searchParams = useSearchParams();
   const serviceIdParam = searchParams.get('serviceId');
+  const styleParam = searchParams.get('style') || searchParams.get('diseno');
 
   // Pre-seed with guaranteed defaults so the wizard is NEVER blocked or blank
   const [services, setServices] = useState<Service[]>(DEFAULT_SERVICES);
@@ -49,7 +50,15 @@ export default function BookingWizard() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [clientName, setClientName] = useState('');
   const [clientPhone, setClientPhone] = useState('');
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState(() => {
+    return styleParam ? `Inspiración: ${styleParam}` : '';
+  });
+
+  useEffect(() => {
+    if (styleParam && !notes) {
+      setNotes(`Inspiración: ${styleParam}`);
+    }
+  }, [styleParam]);
 
   // Success modal
   const [showSuccessModal, setShowSuccessModal] = useState(false);

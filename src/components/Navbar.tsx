@@ -20,6 +20,7 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'Inicio', href: '/' },
+    { label: 'Inspiración 3D', href: '/#inspiracion-3d' },
     { label: 'Servicios', href: '/servicios' },
     { label: 'Trabajos', href: '/trabajos' },
   ];

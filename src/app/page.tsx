@@ -1,5 +1,6 @@
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
+import NailShowcase3D from '@/components/NailShowcase3D';
 import ServicesSection from '@/components/ServicesSection';
 import RecentWorksSection from '@/components/RecentWorksSection';
 import HowToBookSection from '@/components/HowToBookSection';
@@ -14,6 +15,7 @@ export default function Home() {
       {/* Main landing content */}
       <main className="flex-1">
         <Hero />
+        <NailShowcase3D />
         <ServicesSection />
         <RecentWorksSection />
         <HowToBookSection />
