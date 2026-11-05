@@ -20,7 +20,6 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'Inicio', href: '/' },
-    { label: 'Estudio 3D', href: '/#estudio-3d' },
     { label: 'Servicios', href: '/servicios' },
     { label: 'Trabajos', href: '/trabajos' },
   ];

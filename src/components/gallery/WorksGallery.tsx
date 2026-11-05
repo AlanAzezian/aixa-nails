@@ -80,7 +80,7 @@ export default function WorksGallery({
         id: s.id,
         title: s.title,
         category: s.category,
-        illustration: s.nails,
+        imageUrl: s.imageUrl,
       }));
       return limit ? samples.slice(0, limit) : samples;
     }
@@ -195,11 +195,7 @@ export default function WorksGallery({
         </p>
       )}
 
-      {usingFallback && (
-        <p className="text-center font-jost text-xs sm:text-sm text-brand-dark/60 mt-8 italic">
-          Ilustraciones de ejemplo: muy pronto vas a ver acá las fotos reales de los trabajos de Aixa.
-        </p>
-      )}
+
     </>
   );
 }
