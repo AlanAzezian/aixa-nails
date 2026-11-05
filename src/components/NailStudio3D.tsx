@@ -71,8 +71,8 @@ export default function NailStudio3D() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="font-jost text-base sm:text-lg text-brand-dark/75 leading-relaxed"
           >
-            Explorá el ápice esculpido, la curvatura anatómica y el destello hiperbrillante de nuestro
-            top coat vitrificado. Tocá o arrastrá para girar la uña 360°.
+            Visualizá la forma, los tonos y el acabado real de cada diseño tal como se realizan en el salón.
+            Tocá o arrastrá para girar la uña 360° libremente.
           </motion.p>
         </div>
 
