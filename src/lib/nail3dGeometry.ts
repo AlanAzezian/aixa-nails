@@ -3,24 +3,24 @@ import { NailDesign } from '@/types/showcase3d';
 
 export const NAIL_DESIGNS: NailDesign[] = [
   {
-    id: 'vino-profundo',
-    name: 'Vino Profundo & Nude',
-    subtitle: 'Bordeaux de autor con insignia dorada AN',
-    technique: 'Kapping en polygel & Nail art a mano alzada con pan de oro',
+    id: 'vino-an',
+    name: 'Vino AN',
+    subtitle: 'Bordó icónico (#6B0F24) con monograma AN',
+    technique: 'Kapping en polygel & Nail Art a mano alzada con pan de oro',
     finish: 'Top Coat Ultra Gloss Efecto Cristal',
     durability: '21 a 28 días intactas',
     description:
-      'Tono borgoña de autor profundo (#6B0F24) fusionado con una media luna nude translúcida en la cutícula. Coronado con una estrella radiante en foil dorado y el monograma exclusivo AN.',
+      'El tono bordó insignia de Aixa Nails (#6B0F24) combinado con una suave media luna nude en la cutícula, coronado con destellos dorados y el monograma de autor AN.',
     recommendedServiceId: '2',
     recommendedServiceName: 'Kapping en polygel',
     colors: [
-      { name: 'Vino Autor', hex: '#6B0F24' },
-      { name: 'Borgoña Noche', hex: '#4A0716' },
+      { name: 'Bordó AN', hex: '#6B0F24' },
+      { name: 'Vino Noche', hex: '#4A0716' },
       { name: 'Nude Soft', hex: '#F0D6D2' },
       { name: 'Oro Pulido', hex: '#E5B869' },
     ],
-    badge: 'Insignia del Salón',
-    roughness: 0.12,
+    badge: 'Firma de la Casa',
+    roughness: 0.1,
     metalness: 0.1,
     clearcoat: 1.0,
     clearcoatRoughness: 0.03,
@@ -31,84 +31,111 @@ export const NAIL_DESIGNS: NailDesign[] = [
   },
   {
     id: 'ojo-de-gato',
-    name: 'Ojo de Gato Galáctico',
-    subtitle: 'Brillo magnético 9D multidimensional',
-    technique: 'Esmaltado magnético suspendido con neodimio',
+    name: 'Ojo de Gato',
+    subtitle: 'Efecto magnético plateado 9D',
+    technique: 'Esmaltado magnético multidimensional con imán de neodimio',
     finish: 'Terciopelo líquido y destellos de prisma',
-    durability: '21+ días de brillo activo',
+    durability: '21+ días de brillo dinámico',
     description:
-      'Partículas de cuarzo y pigmentos magnéticos activados con imanes que crean un haz de luz plateada flotante. Al mover la uña bajo la luz, el reflejo viaja por toda la superficie como terciopelo líquido.',
+      'Pigmentos magnéticos ultra finos suspendidos que concentran un haz de luz plateada flotante. Al interactuar con la luz, el destello viaja por la superficie creando un efecto 3D hipnótico.',
     recommendedServiceId: '4',
     recommendedServiceName: 'Soft gel',
     colors: [
       { name: 'Cosmos Plum', hex: '#220818' },
-      { name: 'Plata Magnética', hex: '#E2DCE6' },
+      { name: 'Plata Velvet', hex: '#E2DCE6' },
       { name: 'Lavanda Humo', hex: '#876D89' },
-      { name: 'Destello Astral', hex: '#FFFFFF' },
+      { name: 'Brillo Cristal', hex: '#FFFFFF' },
     ],
-    badge: 'Tendencia Velvet',
-    roughness: 0.08,
-    metalness: 0.35,
+    badge: 'Efecto Magnético',
+    roughness: 0.07,
+    metalness: 0.38,
     clearcoat: 1.0,
     clearcoatRoughness: 0.02,
     transmission: 0.08,
-    iridescence: 0.85,
-    sheen: 0.9,
+    iridescence: 0.92,
+    sheen: 0.95,
     sheenColor: '#E2DCE6',
   },
   {
-    id: 'francesita-dorada',
-    name: 'Francesita Editorial Dorada',
-    subtitle: 'Micro-French en cromo oro líquido',
-    technique: 'Esmaltado nude lechoso con smile line en cromo espejo',
-    finish: 'Cromo espejo ultra reflectante',
+    id: 'francesita-soft',
+    name: 'Francesita Soft',
+    subtitle: 'Base nude translúcida con sonrisa fina',
+    technique: 'Micro-French de precisión en bordó y oro líquido',
+    finish: 'Porcelana Nude & Acabado Líquido',
     durability: '21 a 25 días',
     description:
-      'La clásica manicura francesa reinterpretada en clave de alta costura: una base de porcelana nude lechosa de cobertura etérea rematada por un arco ultra definido en cromo dorado espejo de acabado líquido.',
+      'La manicura francesa clásica reinventada en clave editorial: base lechosa de cobertura etérea rematada por un arco ultra fino que combina el bordó de autor con un perfil en cromo dorado.',
     recommendedServiceId: '2',
     recommendedServiceName: 'Kapping en polygel',
     colors: [
       { name: 'Porcelana Nude', hex: '#F6E6E4' },
-      { name: 'Blush Translúcido', hex: '#EBC7C4' },
+      { name: 'Bordó Editorial', hex: '#6B0F24' },
       { name: 'Oro Espejo', hex: '#F5CE66' },
-      { name: 'Cromo Imperial', hex: '#C6922A' },
+      { name: 'Blush Cutícula', hex: '#EBC7C4' },
     ],
     badge: 'Elegancia Minimal',
-    roughness: 0.09,
-    metalness: 0.55,
+    roughness: 0.08,
+    metalness: 0.42,
     clearcoat: 1.0,
-    clearcoatRoughness: 0.04,
+    clearcoatRoughness: 0.03,
     transmission: 0.12,
-    iridescence: 0.3,
-    sheen: 0.6,
+    iridescence: 0.25,
+    sheen: 0.55,
     sheenColor: '#FFEAA7',
   },
   {
     id: 'baby-boomer',
-    name: 'Baby Boomer Soft degradé',
-    subtitle: 'Difuminado nube blanco porcelana',
-    technique: 'Degradé francés difuminado con aerógrafo y esponja',
-    finish: 'Milky Glass & Suavidad Visual',
-    durability: '25+ días con crecimiento imperceptible',
+    name: 'Baby Boomer',
+    subtitle: 'Degradé lechoso suave hacia la punta',
+    technique: 'Ombré difuminado con esponja y aerógrafo sobre base rosa suave',
+    finish: 'Milky Glass & Crecimiento Imperceptible',
+    durability: '25+ días con acabado natural',
     description:
-      'El degradé más pedido por su sutileza y sofisticación. Una transición limpia sin líneas marcadas que viaja desde el rosado natural de la cutícula hacia una punta blanco nube lechoso.',
+      'Transición suave y continua que viaja desde la base rosa suave (#FDE8E9) en la cutícula hacia una punta blanco nube lechoso, logrando manos estilizadas con una estética limpia.',
     recommendedServiceId: '3',
     recommendedServiceName: 'Esculpidas en polygel',
     colors: [
-      { name: 'Blush Cutícula', hex: '#F2CEC9' },
-      { name: 'Rosa Seda', hex: '#F8DFDC' },
+      { name: 'Rosa Suave', hex: '#FDE8E9' },
+      { name: 'Blush Nude', hex: '#F2CEC9' },
       { name: 'Blanco Lechoso', hex: '#FDFBFB' },
-      { name: 'Cristal Gloss', hex: '#FFFFFF' },
+      { name: 'Gloss Cristal', hex: '#FFFFFF' },
     ],
     badge: 'Clásico Atemporal',
-    roughness: 0.07,
+    roughness: 0.06,
     metalness: 0.02,
     clearcoat: 1.0,
     clearcoatRoughness: 0.02,
     transmission: 0.22,
-    iridescence: 0.1,
-    sheen: 0.3,
+    iridescence: 0.12,
+    sheen: 0.35,
     sheenColor: '#FFFFFF',
+  },
+  {
+    id: 'glazed-donut',
+    name: 'Glazed Donut / Cromado',
+    subtitle: 'Brillo perlado iridiscente satinado',
+    technique: 'Polvo cromado de perla frotado sobre gel semi-translúcido',
+    finish: 'Perla Iridiscente & Destello Satinado',
+    durability: '21 a 28 días de brillo continuo',
+    description:
+      'El codiciado efecto Hailey Bieber: una infusión de pigmentos perlados de micro-refracción que transforma la uña con un lustre irisado que cambia de rosa a plata champagne con la luz.',
+    recommendedServiceId: '1',
+    recommendedServiceName: 'Esmaltado semipermanente',
+    colors: [
+      { name: 'Perla Irisada', hex: '#FFF4FD' },
+      { name: 'Champagne Glazed', hex: '#F9ECE5' },
+      { name: 'Rosa Nácar', hex: '#FCE7ED' },
+      { name: 'Prisma Silver', hex: '#EAE6F0' },
+    ],
+    badge: 'Tendencia Viral',
+    roughness: 0.05,
+    metalness: 0.28,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.02,
+    transmission: 0.18,
+    iridescence: 0.95,
+    sheen: 0.9,
+    sheenColor: '#FFF4FD',
   },
 ];
 
@@ -127,7 +154,6 @@ export function createAlmondNailGeometry(): THREE.BufferGeometry {
   const thickness = 0.045;
 
   function getPoint(u: number, v: number): THREE.Vector3 {
-    // Width profile w(u): u from 0 (cuticle) to 1 (free edge tip)
     let w = 1.0;
     if (u < 0.22) {
       const t = u / 0.22;
@@ -139,7 +165,7 @@ export function createAlmondNailGeometry(): THREE.BufferGeometry {
       w = (0.94 - 0.86 * t ** 1.35) * Math.sqrt(Math.max(0.01, 1 - t * 0.9));
     }
 
-    // Apex longitudinal curvature (apex peak around 36% from cuticle)
+    // Apex longitudinal curvature (peak at 36% from cuticle)
     let zApex = 0;
     if (u <= 0.36) {
       const t = u / 0.36;
@@ -218,46 +244,39 @@ export function createAlmondNailGeometry(): THREE.BufferGeometry {
     }
   }
 
-  // Side walls: left edge
+  // Side walls
   for (let j = 0; j < ny; j++) {
     const topA = j * (nx + 1);
     const topB = (j + 1) * (nx + 1);
     const botA = vertexOffsetBottom + topA;
     const botB = vertexOffsetBottom + topB;
-
     indices.push(topA, botA, topB);
     indices.push(botA, botB, topB);
   }
 
-  // Side walls: right edge
   for (let j = 0; j < ny; j++) {
     const topA = j * (nx + 1) + nx;
     const topB = (j + 1) * (nx + 1) + nx;
     const botA = vertexOffsetBottom + topA;
     const botB = vertexOffsetBottom + topB;
-
     indices.push(topA, topB, botA);
     indices.push(topB, botB, botA);
   }
 
-  // Side walls: cuticle edge
   for (let i = 0; i < nx; i++) {
     const topA = i;
     const topB = i + 1;
     const botA = vertexOffsetBottom + topA;
     const botB = vertexOffsetBottom + topB;
-
     indices.push(topA, topB, botA);
     indices.push(topB, botB, botA);
   }
 
-  // Side walls: free edge tip
   for (let i = 0; i < nx; i++) {
     const topA = ny * (nx + 1) + i;
     const topB = ny * (nx + 1) + (i + 1);
     const botA = vertexOffsetBottom + topA;
     const botB = vertexOffsetBottom + topB;
-
     indices.push(topA, botA, topB);
     indices.push(botA, botB, topB);
   }
@@ -283,16 +302,13 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
   const ctx = canvas.getContext('2d');
 
   if (!ctx) {
-    const fallbackTexture = new THREE.CanvasTexture(canvas);
-    return fallbackTexture;
+    return new THREE.CanvasTexture(canvas);
   }
 
-  // Clear canvas
   ctx.clearRect(0, 0, size, size);
 
-  if (designId === 'vino-profundo') {
-    // 1. Vino Profundo & Nude (#6B0F24 with golden star AN)
-    // Deep burgundy gradient
+  if (designId === 'vino-an') {
+    // 1. Vino AN: Deep burgundy with gold sparkle and AN monogram
     const grad = ctx.createLinearGradient(0, size, 0, 0);
     grad.addColorStop(0, '#3A0512');
     grad.addColorStop(0.2, '#50091A');
@@ -309,7 +325,7 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
     ctx.fillStyle = radVig;
     ctx.fillRect(0, 0, size, size);
 
-    // Cuticle Lunula (nude accent crescent at the base)
+    // Cuticle Lunula
     ctx.save();
     ctx.beginPath();
     ctx.ellipse(size / 2, size * 0.98, 260, 140, 0, 0, Math.PI * 2);
@@ -321,7 +337,7 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
     ctx.fill();
     ctx.restore();
 
-    // Lunula golden micro-bead boundary
+    // Lunula golden micro-bead border
     ctx.save();
     ctx.beginPath();
     ctx.arc(size / 2, size * 0.97, 245, Math.PI * 1.1, Math.PI * 1.9);
@@ -346,7 +362,6 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
     const starX = size / 2;
     const starY = size * 0.46;
 
-    // Golden aura
     const starAura = ctx.createRadialGradient(starX, starY, 5, starX, starY, 110);
     starAura.addColorStop(0, 'rgba(255, 235, 175, 0.6)');
     starAura.addColorStop(0.4, 'rgba(212, 175, 55, 0.25)');
@@ -356,10 +371,9 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
     ctx.arc(starX, starY, 110, 0, Math.PI * 2);
     ctx.fill();
 
-    // 8-pointed golden star
     drawStar(ctx, starX, starY, 8, 54, 16, '#F8E298', '#D4AF37');
 
-    // Cross glints (horizontal and vertical rays)
+    // Cross glints
     ctx.save();
     ctx.strokeStyle = 'rgba(255, 245, 215, 0.85)';
     ctx.lineWidth = 2.5;
@@ -369,19 +383,9 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
     ctx.moveTo(starX, starY - 85);
     ctx.lineTo(starX, starY + 85);
     ctx.stroke();
-
-    // Diagonal soft rays
-    ctx.strokeStyle = 'rgba(255, 230, 170, 0.45)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(starX - 45, starY - 45);
-    ctx.lineTo(starX + 45, starY + 45);
-    ctx.moveTo(starX - 45, starY + 45);
-    ctx.lineTo(starX + 45, starY - 45);
-    ctx.stroke();
     ctx.restore();
 
-    // Elegant Monogram "AN"
+    // Monogram AN
     ctx.save();
     ctx.font = '600 38px "Cormorant Garamond", Georgia, serif';
     ctx.textAlign = 'center';
@@ -389,12 +393,10 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
     ctx.fillStyle = '#F8E298';
     ctx.shadowColor = 'rgba(212, 175, 55, 0.8)';
     ctx.shadowBlur = 12;
-    ctx.letterSpacing = '6px';
     ctx.fillText('A · N', starX, starY + 82);
     ctx.restore();
   } else if (designId === 'ojo-de-gato') {
-    // 2. Ojo de Gato Galáctico (Velvet 9D magnetic flash)
-    // Dark cosmic base
+    // 2. Ojo de Gato (Velvet 9D magnetic flash)
     const grad = ctx.createRadialGradient(size / 2, size / 2, 50, size / 2, size / 2, 600);
     grad.addColorStop(0, '#350B24');
     grad.addColorStop(0.5, '#200717');
@@ -402,7 +404,7 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, size, size);
 
-    // Ethereal purple/lavender aura
+    // Ethereal purple nebula
     const nebula = ctx.createLinearGradient(0, 0, size, size);
     nebula.addColorStop(0.2, 'rgba(80, 20, 60, 0.4)');
     nebula.addColorStop(0.5, 'rgba(120, 60, 110, 0.25)');
@@ -422,12 +424,11 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
       ctx.fill();
     }
 
-    // 9D Magnetic Velvet Cat-Eye Beam (diagonal slashed glow)
+    // 9D Magnetic Velvet Cat-Eye Beam
     ctx.save();
     ctx.translate(size / 2, size / 2);
-    ctx.rotate(-0.58); // elegant diagonal angle
+    ctx.rotate(-0.58);
 
-    // Broad soft magnetic scatter
     const beamWide = ctx.createLinearGradient(-350, 0, 350, 0);
     beamWide.addColorStop(0, 'rgba(180, 150, 200, 0)');
     beamWide.addColorStop(0.35, 'rgba(215, 195, 235, 0.18)');
@@ -437,7 +438,6 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
     ctx.fillStyle = beamWide;
     ctx.fillRect(-350, -600, 700, 1200);
 
-    // Razor-sharp intense magnetic core
     const beamCore = ctx.createLinearGradient(-80, 0, 80, 0);
     beamCore.addColorStop(0, 'rgba(255, 255, 255, 0)');
     beamCore.addColorStop(0.4, 'rgba(255, 255, 255, 0.7)');
@@ -447,21 +447,9 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
     ctx.fillStyle = beamCore;
     ctx.fillRect(-80, -600, 160, 1200);
 
-    // Magnetic filament sparks along the beam
-    for (let i = 0; i < 70; i++) {
-      const y = -500 + i * 15 + Math.sin(i * 17) * 8;
-      const x = Math.sin(i * 4.3) * 22;
-      const sizeDot = Math.random() * 2.2 + 0.8;
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-      ctx.beginPath();
-      ctx.arc(x, y, sizeDot, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
     ctx.restore();
-  } else if (designId === 'francesita-dorada') {
-    // 3. Francesita Editorial Dorada
-    // Translucent milky porcelain nude bed
+  } else if (designId === 'francesita-soft') {
+    // 3. Francesita Soft: Translucent nude with fine bordeaux and gold smile line
     const grad = ctx.createLinearGradient(0, size, 0, 0);
     grad.addColorStop(0, '#E8C5C0');
     grad.addColorStop(0.3, '#F5DBD8');
@@ -470,7 +458,7 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, size, size);
 
-    // Soft lateral shading for porcelain 3D depth
+    // Lateral shading for 3D depth
     const edgeShade = ctx.createLinearGradient(0, 0, size, 0);
     edgeShade.addColorStop(0, 'rgba(180, 130, 125, 0.28)');
     edgeShade.addColorStop(0.18, 'rgba(220, 180, 175, 0.08)');
@@ -488,58 +476,51 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
     ctx.fill();
     ctx.restore();
 
-    // Chrome Liquid Gold French Tip Smile Line (top free edge)
+    // Micro-French Tip: Dual bordeaux (#6B0F24) & chrome gold smile line
     ctx.save();
     ctx.beginPath();
-    // Smile line curve
     ctx.moveTo(120, 0);
-    ctx.lineTo(120, 180);
-    ctx.bezierCurveTo(300, 275, 724, 275, 904, 180);
+    ctx.lineTo(120, 170);
+    ctx.bezierCurveTo(300, 260, 724, 260, 904, 170);
     ctx.lineTo(904, 0);
     ctx.closePath();
 
-    // Chrome metallic gradient
-    const chromeGrad = ctx.createLinearGradient(120, 100, 904, 150);
-    chromeGrad.addColorStop(0, '#C59128');
-    chromeGrad.addColorStop(0.2, '#FCE38A');
-    chromeGrad.addColorStop(0.38, '#FFFFFF');
-    chromeGrad.addColorStop(0.52, '#D4AF37');
-    chromeGrad.addColorStop(0.72, '#FBE696');
-    chromeGrad.addColorStop(0.9, '#A77317');
-    chromeGrad.addColorStop(1, '#F3D478');
-    ctx.fillStyle = chromeGrad;
+    // Bordeaux base tip
+    const bordeauxGrad = ctx.createLinearGradient(120, 80, 904, 140);
+    bordeauxGrad.addColorStop(0, '#5A0B1E');
+    bordeauxGrad.addColorStop(0.5, '#6B0F24');
+    bordeauxGrad.addColorStop(1, '#4A0716');
+    ctx.fillStyle = bordeauxGrad;
     ctx.fill();
 
-    // High precision razor-sharp border smile line
+    // Fine chrome gold smile line edge
     ctx.beginPath();
-    ctx.moveTo(120, 180);
-    ctx.bezierCurveTo(300, 275, 724, 275, 904, 180);
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.lineWidth = 3.5;
+    ctx.moveTo(120, 170);
+    ctx.bezierCurveTo(300, 260, 724, 260, 904, 170);
+    ctx.strokeStyle = '#F6D365';
+    ctx.lineWidth = 4;
     ctx.stroke();
 
-    // Delicate 1px gold metallic contour
     ctx.beginPath();
-    ctx.moveTo(125, 183);
-    ctx.bezierCurveTo(305, 278, 719, 278, 899, 183);
-    ctx.strokeStyle = 'rgba(197, 145, 40, 0.7)';
+    ctx.moveTo(120, 174);
+    ctx.bezierCurveTo(300, 264, 724, 264, 904, 174);
+    ctx.strokeStyle = '#D4AF37';
     ctx.lineWidth = 2;
     ctx.stroke();
     ctx.restore();
-  } else {
-    // 4. Baby Boomer Soft degradé (Seamless ombré)
-    // Vertical soft gradient from cuticle pink to milky porcelain white
+  } else if (designId === 'baby-boomer') {
+    // 4. Baby Boomer: Seamless milky fade from #FDE8E9 to porcelain white
     const grad = ctx.createLinearGradient(0, size, 0, 0);
-    grad.addColorStop(0, '#E2B8B3');
-    grad.addColorStop(0.2, '#EECCC8');
-    grad.addColorStop(0.45, '#F6DDD9');
-    grad.addColorStop(0.65, '#FAECEB');
-    grad.addColorStop(0.85, '#FAF6F6');
+    grad.addColorStop(0, '#E8B6AF');
+    grad.addColorStop(0.2, '#F2CCC7');
+    grad.addColorStop(0.4, '#FDE8E9'); // Brand soft rose base
+    grad.addColorStop(0.68, '#FBF0F0');
+    grad.addColorStop(0.88, '#FAF6F6');
     grad.addColorStop(1, '#FFFFFF');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, size, size);
 
-    // Airbrushed soft cloud transitions (simulating sponge & airbrush technique)
+    // Airbrushed soft cloud transitions
     ctx.save();
     const cloud1 = ctx.createRadialGradient(size / 2, size * 0.45, 80, size / 2, size * 0.45, 400);
     cloud1.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
@@ -552,18 +533,54 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
     const tipMilky = ctx.createLinearGradient(0, size * 0.35, 0, 0);
     tipMilky.addColorStop(0, 'rgba(255, 255, 255, 0)');
     tipMilky.addColorStop(0.5, 'rgba(255, 255, 255, 0.5)');
-    tipMilky.addColorStop(1, 'rgba(255, 255, 255, 0.85)');
+    tipMilky.addColorStop(1, 'rgba(255, 255, 255, 0.88)');
     ctx.fillStyle = tipMilky;
     ctx.fillRect(0, 0, size, size * 0.35);
-
-    // Subtle edge curvature depth
-    const lateralShade = ctx.createLinearGradient(0, 0, size, 0);
-    lateralShade.addColorStop(0, 'rgba(200, 160, 155, 0.15)');
-    lateralShade.addColorStop(0.2, 'rgba(255, 255, 255, 0.08)');
-    lateralShade.addColorStop(0.8, 'rgba(255, 255, 255, 0.08)');
-    lateralShade.addColorStop(1, 'rgba(200, 160, 155, 0.15)');
-    ctx.fillStyle = lateralShade;
+    ctx.restore();
+  } else {
+    // 5. Glazed Donut / Cromado (Hailey Bieber chrome pearl luster)
+    const grad = ctx.createLinearGradient(0, size, 0, 0);
+    grad.addColorStop(0, '#F5DCD8');
+    grad.addColorStop(0.25, '#FCE8E5');
+    grad.addColorStop(0.5, '#FFF2F5');
+    grad.addColorStop(0.75, '#F7ECF8');
+    grad.addColorStop(1, '#FFFBFD');
+    ctx.fillStyle = grad;
     ctx.fillRect(0, 0, size, size);
+
+    // Satin opalescent sheen streaks
+    ctx.save();
+    const pearlGlow = ctx.createLinearGradient(0, 0, size, size);
+    pearlGlow.addColorStop(0, 'rgba(255, 240, 250, 0.4)');
+    pearlGlow.addColorStop(0.3, 'rgba(235, 225, 255, 0.3)');
+    pearlGlow.addColorStop(0.5, 'rgba(255, 255, 255, 0.65)');
+    pearlGlow.addColorStop(0.7, 'rgba(255, 245, 230, 0.35)');
+    pearlGlow.addColorStop(1, 'rgba(240, 230, 255, 0.4)');
+    ctx.fillStyle = pearlGlow;
+    ctx.fillRect(0, 0, size, size);
+
+    // Micro pearl shimmer dust
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+    for (let i = 0; i < 180; i++) {
+      const px = Math.sin(i * 73.1) * 420 + size / 2;
+      const py = Math.cos(i * 51.9) * 440 + size / 2;
+      const r = (Math.sin(i * 15.7) + 1.2) * 1.0;
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Central glazed satin light beam (diagonal soft luster)
+    ctx.translate(size / 2, size / 2);
+    ctx.rotate(-0.42);
+    const satinBeam = ctx.createLinearGradient(-180, 0, 180, 0);
+    satinBeam.addColorStop(0, 'rgba(255, 255, 255, 0)');
+    satinBeam.addColorStop(0.4, 'rgba(255, 255, 255, 0.55)');
+    satinBeam.addColorStop(0.5, 'rgba(255, 255, 255, 0.85)');
+    satinBeam.addColorStop(0.6, 'rgba(255, 255, 255, 0.55)');
+    satinBeam.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = satinBeam;
+    ctx.fillRect(-180, -600, 360, 1200);
     ctx.restore();
   }
 
@@ -573,9 +590,6 @@ export function createNailTexture(designId: string): THREE.CanvasTexture {
   return texture;
 }
 
-/**
- * Draws a symmetrical n-pointed star with inner and outer radii.
- */
 function drawStar(
   ctx: CanvasRenderingContext2D,
   cx: number,
